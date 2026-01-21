@@ -1,0 +1,35 @@
+name: Criar e implantar localmente
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build e push da imagem
+        run: |
+          docker build -t elivandrolopes/portaria:7.0 .
+          docker push elivandrolopes/portaria:7.0
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy local com Docker Compose
+        run: |
+          cd /media/grupomateus/3f9a2e1e-ae3c-4ea5-9750-035aa9017e4d/servidor
+          docker compose pull
+          docker compose up -d portaria-app
