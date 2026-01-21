@@ -33,14 +33,6 @@ public class SecurityConfiguration {
                 ))
                 .authorizeHttpRequests(e->
                         e.requestMatchers(HttpMethod.POST,"/portaria/v1/usuario/login").permitAll()
-//                                .requestMatchers( "/**",
-//                                        "/verify",
-//                                        "/index.html",         // index
-//                                        "/favicon.ico",
-//                                        "portaria/**",
-//                                        "/unauthorized",
-//                                        "/assets/**",          // JS, CSS, imagens
-//                                        "/static/**"  ).permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/portaria/v1/avatar/*").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/portaria/v1/entrada/*").permitAll()
