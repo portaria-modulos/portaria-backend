@@ -18,8 +18,7 @@ public class CorsConfigurations {
                                 "http://192.168.88.239:8085",
                                 "https://192.168.100.91:8085",
                                 "http://10.220.115.100/",
-                                "http://192.168.88.239/",
-                                "http://portaria.grupomateus/")
+                                "http://192.168.88.239/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders(
                                 "Content-Type",
