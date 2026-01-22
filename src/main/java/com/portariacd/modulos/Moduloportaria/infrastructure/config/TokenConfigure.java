@@ -68,7 +68,6 @@ public class TokenConfigure {
                     .verify(token).getClaims();
         } catch (JWTVerificationException exception){
             throw new JWTVerificationException("Sessão expirada");
-            // Invalid signature/claims
         }
     }
 }
