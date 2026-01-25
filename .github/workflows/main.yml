@@ -21,8 +21,8 @@ jobs:
 
       - name: Build e push da imagem
         run: |
-          docker build -t elivandrolopes/portaria:7.1 .
-          docker push elivandrolopes/portaria:7.1
+          docker build -t elivandrolopes/portaria:7.0 .
+          docker push elivandrolopes/portaria:7.0
 
   deploy:
     needs: build
