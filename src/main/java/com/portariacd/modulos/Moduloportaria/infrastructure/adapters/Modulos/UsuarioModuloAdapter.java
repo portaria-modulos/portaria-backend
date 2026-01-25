@@ -10,6 +10,7 @@ import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosP
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.UsuarioModuloEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.UsuarioModuloRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +28,13 @@ public class UsuarioModuloAdapter implements ModuloGatewayRepository {
       this.respositoryAcesso = respositoryAcesso;
       this.usuarioRepository = usuarioRepository;
   }
-
-  public void addPermission(List<ModuleDTO> pemission, FilialDTOMod mod, Long usuarioId){
+ @Transactional
+  public void addPermission(List<ModuleDTO> pemission, FilialDTOMod modFilial, Long usuarioId){
       UsuarioEntity usuario = usuarioRepository.findById(usuarioId).orElseThrow(
               ()-> new RuntimeException("Erro ao buscar Usuario")
       );
-      if(mod.filial()!=null){
-          usuario.setFilial(mod.filial());
+      if(modFilial.filial()!=null){
+          usuario.setFilial(modFilial.filial());
           usuarioRepository.save(usuario);
       }
       for (ModuleDTO modulo:pemission){

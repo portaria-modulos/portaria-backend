@@ -26,4 +26,6 @@ public interface UsuarioGatewayRepository {
      void salvaImagem(Long usuarioId, MultipartFile file);
 
      public void alteraSenha(AlteraSenhaDTO dto);
+
+     UsuarioRequestFiliasDTO filtraFiliais(Long id);
 }

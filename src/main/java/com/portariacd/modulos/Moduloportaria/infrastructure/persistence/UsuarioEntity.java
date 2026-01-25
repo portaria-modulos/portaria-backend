@@ -1,6 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.portariacd.modulos.Moduloportaria.domain.models.auth.Usuario;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.UsuarioFilialEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.UsuarioModuloEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
 import jakarta.persistence.*;
@@ -42,6 +43,10 @@ public class UsuarioEntity implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     @Where(clause = "ativo = true")
     private Set<UsuarioModuloEntity> modulos;
+
+    @OneToMany(mappedBy = "usuario")
+    @Where(clause = "ativo = true")
+    private Set<UsuarioFilialEntity> filiais;
     @Column(name = "current_session")
     private String currentSession;
     @Column(name = "session_expires_at")

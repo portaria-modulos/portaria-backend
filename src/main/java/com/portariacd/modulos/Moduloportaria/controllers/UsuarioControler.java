@@ -106,6 +106,11 @@ public class UsuarioControler {
         UsuarioRequestDTO usuario = service.buscaUsuario(id);
         return ResponseEntity.ok().body(usuario);
     }
+    @GetMapping("/busca/filiais")
+    public ResponseEntity<UsuarioRequestFiliasDTO> BuscaFiliaisUsuario(@RequestParam("usuarioId") Long id){
+        UsuarioRequestFiliasDTO usuario = service.filtraFilial(id);
+        return ResponseEntity.ok().body(usuario);
+    }
     @PutMapping("/avatar")
     public ResponseEntity<?> adicionarImagem(@RequestParam("usuarioId") Long usuarioId, @RequestParam("file") MultipartFile file){
         try {

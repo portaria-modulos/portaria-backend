@@ -72,7 +72,8 @@ public class DataInitializer implements CommandLineRunner {
                 "CRIAR_REGISTRO", "EDITAR_REGISTRO", "DELETAR_REGISTRO", "VISUALIZAR_REGISTRO",
                 "GERENCIAR_USUARIOS", "REGISTRAR_ENTRADA", "REGISTRAR_SAIDA","DELETAR_ENTRADA","EDITAR_ENTRADA",
                 "GERAR_RELATORIO", "VISUALIZAR_VISITANTES", "ALTERAR_CONFIGURACOES","GERENCIAR_REGISTROS","DELETAR_USUARIO",
-                "EDITAR_USUARIO","DELETE_GLOBAL","REGISTRO_CRIADO","LISTA_GERAL","CADASTRO_USUARIO","ADICIONAR_ACESSO"
+                "EDITAR_USUARIO","DELETE_GLOBAL","REGISTRO_CRIADO","LISTA_GERAL","CADASTRO_USUARIO","ADICIONAR_ACESSO",
+                "DELETE_LOGISTICO"
         );
         Set<String> existentes = new HashSet<>(permissionRepository.findAll()
                 .stream()
@@ -106,6 +107,7 @@ public class DataInitializer implements CommandLineRunner {
                     permissoesMap.get("GERENCIAR_USUARIOS"),
                     permissoesMap.get("REGISTRAR_ENTRADA"),
                     permissoesMap.get("REGISTRAR_SAIDA"),
+                    permissoesMap.get("DELETE_LOGISTICO"),
                     permissoesMap.get("DELETAR_ENTRADA"),
                     permissoesMap.get("EDITAR_ENTRADA"),
                     permissoesMap.get("GERAR_RELATORIO"),
@@ -118,7 +120,19 @@ public class DataInitializer implements CommandLineRunner {
                     permissoesMap.get("REGISTRO_CRIADO"),
                     permissoesMap.get("CADASTRO_USUARIO"),
                     permissoesMap.get("ADICIONAR_ACESSO"),
-                    permissoesMap.get("LISTA_GERAL")
+                    permissoesMap.get("LISTA_GERAL"),
+                    permissoesMap.get("DELETE_LOGISTICO")
+            )));            perfilRepository.save(admin);
+        }
+        if (!perfilRepository.existsByNome("LOGISTICO_CONTROLE")) {
+            PerfilEntity admin = new PerfilEntity();
+            admin.setNome("LOGISTICO_CONTROLE");
+            perfilRepository.saveAndFlush(admin);
+            admin.setPermissoes(new HashSet<>(Arrays.asList(
+                    permissoesMap.get("CRIAR_REGISTRO"),
+                    permissoesMap.get("EDITAR_REGISTRO"),
+                    permissoesMap.get("VISUALIZAR_REGISTRO"),
+                   permissoesMap.get("DELETE_LOGISTICO")
             )));            perfilRepository.save(admin);
         }
         if (!perfilRepository.existsByNome("GERENTE_PREVENCAO")) {
@@ -171,7 +185,8 @@ public class DataInitializer implements CommandLineRunner {
                     permissoesMap.get("VISUALIZAR_REGISTRO"),
                     permissoesMap.get("EDITAR_REGISTRO"),
                     permissoesMap.get("CRIAR_REGISTRO"),
-                    permissoesMap.get("REGISTRO_CRIADO")
+                    permissoesMap.get("REGISTRO_CRIADO"),
+                    permissoesMap.get("DELETE_LOGISTICO")
 
                     ))
             );

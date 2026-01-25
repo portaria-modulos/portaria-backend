@@ -56,5 +56,9 @@ public class UsuarioService{
     public void alteraSenha(AlteraSenhaDTO dto){
         repository.alteraSenha(dto);
     }
+
+    public UsuarioRequestFiliasDTO filtraFilial(Long id) {
+        return repository.filtraFiliais(id);
+    }
 }
 

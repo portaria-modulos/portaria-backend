@@ -245,6 +245,14 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
         repository.salvaSenha(usuario.getPassword(),dto.usuarioId());
    }
 
+    @Override
+    public UsuarioRequestFiliasDTO filtraFiliais(Long id) {
+        UsuarioEntity usuario =repository.findById(id).orElseThrow(
+                ()->new RuntimeException("não foi possivel encontrar usuario!")
+        );
+        return new UsuarioRequestFiliasDTO(usuario);
+    }
+
 
     private void salvaLog(UsuarioRequestDTO usuario, String acao,String descricao){
         String mensagem = String.format(
