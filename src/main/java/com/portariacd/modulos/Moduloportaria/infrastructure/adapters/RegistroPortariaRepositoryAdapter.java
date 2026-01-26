@@ -424,8 +424,9 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
         );
         if(registro.getStatus().equals(StatusPortaria.AGUARDANDO_SAIDA)
                 || registro.getStatus().equals(StatusPortaria.SAIDA_LIBERADA)
+                || !registro.getAtivo() || registro.getStatus().equals(StatusPortaria.FECHADO_AUTOMATICO)
         ){
-            throw new RuntimeException("Não foi possivel atualizar a entrada");
+            throw new RuntimeException("Não e possivel atualizar a solicitação");
         }
         var recorrencia = recorrenciaRepository.findByNome(update.tipoDeAcesso().toUpperCase()).orElseThrow();
 

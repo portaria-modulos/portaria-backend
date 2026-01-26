@@ -17,7 +17,8 @@ public record AtualizaRegistro(
         String  tipoPessoa,
         @NotBlank
         String tipoDeAcesso,
-        String dataAcesso
+        String dataAcesso,
+        String ocupacaoLiberada
 ) {
 }
 

@@ -79,6 +79,7 @@ public class RegistroVisitantePortariaEntity {
         this.placaVeiculo = update.placaVeiculo();
         this.nomeCompleto = update.nomeCompleto();
         this.bloco = update.bloco();
+        this.ocupacaoLiberada = update.ocupacaoLiberada();
     }
 //    @PrePersist
 //    public void gerarId() {
