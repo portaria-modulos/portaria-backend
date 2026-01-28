@@ -21,11 +21,11 @@ public class TarefasServices {
     TarefasServices(RegistroVisitanteRepository repository){
         this.repository = repository;
     }
-    @EventListener(ApplicationReadyEvent.class)
-    public void executarAoIniciar() {
-        System.out.println("Servidor iniciado. Executando tarefa de limpeza inicial...");
-        Rodaservice();
-    }
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void executarAoIniciar() {
+//        System.out.println("Servidor iniciado. Executando tarefa de limpeza inicial...");
+//        Rodaservice();
+//    }
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     protected void Rodaservice(){
