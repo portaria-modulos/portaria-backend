@@ -20,7 +20,7 @@ public class TarefasServices {
         this.repository = repository;
     }
     @Transactional
-    @Scheduled(fixedRate = 43200000) // 12 horas em ms
+    @Scheduled(cron = "0 0 0 * * *")
     protected void Rodaservice(){
         System.out.println("Execultando tarefa");
 
@@ -35,10 +35,11 @@ public class TarefasServices {
                 continue;
             }
             var recorrencia = visitante.getRecorrencia();
-            if(recorrencia==null){
+            var status = registro.getStatus();
+            if(recorrencia==null ){
                 continue;
             }
-            if(recorrencia.getNome().trim().equals("UNICO")){
+            if(recorrencia.getNome().trim().equals("UNICO") && !status.equals(StatusPortaria.AGUARDANDO_SAIDA) ){
                 LocalDate dataHoje = LocalDate.now();
                 LocalDate dataRegistro = registro.getDataCriacao().toLocalDate();
                 if (dataRegistro.isBefore(dataHoje)){
