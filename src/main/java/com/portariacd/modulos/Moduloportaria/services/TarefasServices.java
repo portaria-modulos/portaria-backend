@@ -22,6 +22,7 @@ public class TarefasServices {
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(fixedDelay = Long.MAX_VALUE, initialDelay = 5000)
     protected void Rodaservice(){
         System.out.println("Execultando tarefa");
 
