@@ -3,8 +3,6 @@ package com.portariacd.modulos.Moduloportaria.services;
 import com.portariacd.modulos.Moduloportaria.domain.models.registro_visitante.StatusPortaria;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.RegistroVisitanteRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +19,7 @@ public class TarefasServices {
     TarefasServices(RegistroVisitanteRepository repository){
         this.repository = repository;
     }
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void executarAoIniciar() {
-//        System.out.println("Servidor iniciado. Executando tarefa de limpeza inicial...");
-//        Rodaservice();
-//    }
+
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     protected void Rodaservice(){
