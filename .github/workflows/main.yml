@@ -31,6 +31,6 @@ jobs:
       - name: Deploy local com Docker Compose
         run: |
           # Caminho absoluto para o diretório onde está o seu docker-compose.yml
-          cd /media/grupomateus/3f9a2e1e-ae3c-4ea5-9750-035aa9017e4d/servidor
+          cd /media/grupomateus/3f9a2e1e-ae3c-4ea5-9750-035aa9017e4d1/servidor
           docker compose pull portaria-app
           docker compose up -d portaria-app
