@@ -58,7 +58,7 @@ public class RegistroVisitantePortariaEntity {
       this.descricao = req.descricao();
       this.ocupacaoLiberada = req.ocupacaoLiberada();
       this.criador = usuario;
-      this.filialSolicitado = usuario.getFilial();
+      this.filialSolicitado = req.filialSolicitado();
       this.ativo = true;
     }
 
@@ -71,7 +71,7 @@ public class RegistroVisitantePortariaEntity {
         this.descricao = req.getDescricao();
         this.ocupacaoLiberada = req.getOcupacaoLiberada();
         this.criador = usuario;
-        this.filialSolicitado = usuario.getFilial();
+        this.filialSolicitado = req.getFilialSolicitado();
         this.ativo = true;
     }
 

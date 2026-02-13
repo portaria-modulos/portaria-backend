@@ -16,6 +16,7 @@ public class BlocoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nome;
+    private Long gmBlocoId;
     public  BlocoEntity(String nome){
         this.nome = nome;
     }
