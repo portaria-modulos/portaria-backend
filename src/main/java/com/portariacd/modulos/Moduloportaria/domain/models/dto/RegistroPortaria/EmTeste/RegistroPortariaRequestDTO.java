@@ -28,6 +28,8 @@ public class RegistroPortariaRequestDTO extends CadastroTypeFacture {
         String bloco;
         String globalAtivo;
         String dataAcesso;
+        @NotNull
+        Integer filialSolicitado;
          public RegistroPortariaRequestDTO(){}
         public RegistroPortariaRequestDTO(RegistroVisitantePortariaEntity resposta) {
               this.nomeCompleto =  resposta.getNomeCompleto();
@@ -40,6 +42,7 @@ public class RegistroPortariaRequestDTO extends CadastroTypeFacture {
                        this.descricao= resposta.getDescricao();
                        this.criadorId = resposta.getCriador().getId();
                        this.bloco = resposta.getBloco();
+                       this.filialSolicitado = resposta.getFilialSolicitado();
         }
 
         public RegistroPortariaRequestDTO(AtualizaRegistroPortariaDTO request, VisitanteEntity v) {
@@ -150,5 +153,13 @@ public class RegistroPortariaRequestDTO extends CadastroTypeFacture {
 
         public void setNumeroTelefone(String numeroTelefone) {
                 this.numeroTelefone = numeroTelefone;
+        }
+
+        public Integer getFilialSolicitado() {
+                return filialSolicitado;
+        }
+
+        public void setFilialSolicitado(Integer filialSolicitado) {
+                this.filialSolicitado = filialSolicitado;
         }
 }

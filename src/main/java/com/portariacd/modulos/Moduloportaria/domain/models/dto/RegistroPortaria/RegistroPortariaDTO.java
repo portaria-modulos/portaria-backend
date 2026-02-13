@@ -24,7 +24,9 @@ public record RegistroPortariaDTO(
         @NotBlank
         String bloco,
         String globalAtivo,
-        String dataAcesso
+        String dataAcesso,
+        @NotNull
+        Integer filialSolicitado
 
 ) {
     public RegistroPortariaDTO(RegistroVisitantePortariaEntity resposta) {
@@ -40,7 +42,8 @@ public record RegistroPortariaDTO(
             resposta.getCriador().getId(),
             resposta.getBloco(),
                    null,
-                    null
+                    null,
+                    resposta.getFilialSolicitado()
             );
     }
 
