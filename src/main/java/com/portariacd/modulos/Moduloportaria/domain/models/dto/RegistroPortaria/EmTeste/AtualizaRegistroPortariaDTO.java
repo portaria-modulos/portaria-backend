@@ -17,7 +17,8 @@ public class AtualizaRegistroPortariaDTO extends CadastroTypeFacture {
         String tipoAcesso;
         String globalAtivo;
         String dataAcesso;
-
+        @NotNull
+        Integer filialSolicitado;
         public Long getVisitanteId() {
                 return visitanteId;
         }
@@ -80,5 +81,13 @@ public class AtualizaRegistroPortariaDTO extends CadastroTypeFacture {
 
         public void setTipoAcesso(String tipoAcesso) {
                 this.tipoAcesso = tipoAcesso;
+        }
+
+        public Integer getFilialSolicitado() {
+                return filialSolicitado;
+        }
+
+        public void setFilialSolicitado(Integer filialSolicitado) {
+                this.filialSolicitado = filialSolicitado;
         }
 }

@@ -47,8 +47,6 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
     private static final Set<String> PERMISSOES_FULL_ACCESS = Set.of(
             "GERENCIAR_USUARIOS"
     );
-
-
     public RegistroPortariaRepositoryAdapter(
             RegistroVisitanteRepository repository
             ,VisitanteRepository visitante
@@ -114,7 +112,6 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
                 }
                 visitanteEntity.setDataRestritoAcesso(ConverteData(request.getDataAcesso()));
                 visitanteEntity.setBloqueioAcesso(false);
-
         }
         visitanteEntity.setRecorrencia(rec);
         VisitanteEntity novoVisitante =  visitante.save(visitanteEntity);

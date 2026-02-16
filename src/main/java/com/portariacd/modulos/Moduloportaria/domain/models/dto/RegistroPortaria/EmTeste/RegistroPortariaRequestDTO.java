@@ -56,6 +56,7 @@ public class RegistroPortariaRequestDTO extends CadastroTypeFacture {
                 this.bloco = request.getBloco();
                 this.globalAtivo = request.getGlobalAtivo();
                 this.dataAcesso = request.dataAcesso;
+                this.filialSolicitado = request.getFilialSolicitado();
         }
 
 
