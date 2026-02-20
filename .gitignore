@@ -12,6 +12,9 @@ target/
 .settings
 .springBeans
 .sts4-cache
+# Ignorar todos os APKs gerados
+# Ignorar todos os APKs gerados
+*.apk
 
 ### IntelliJ IDEA ###
 .idea
