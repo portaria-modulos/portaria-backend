@@ -9,6 +9,7 @@ public class AtualizaRegistroPortariaDTO extends CadastroTypeFacture {
         Long visitanteId;
         @NotBlank
         String ocupacaoLiberada;
+        String placaVeiculo;
         String descricao;
         @NotNull
         Long criadorId;
@@ -89,5 +90,13 @@ public class AtualizaRegistroPortariaDTO extends CadastroTypeFacture {
 
         public void setFilialSolicitado(Integer filialSolicitado) {
                 this.filialSolicitado = filialSolicitado;
+        }
+
+        public void setPlacaVeiculo(String placaVeiculo) {
+                this.placaVeiculo = placaVeiculo;
+        }
+
+        public String getPlacaVeiculo() {
+                return placaVeiculo;
         }
 }

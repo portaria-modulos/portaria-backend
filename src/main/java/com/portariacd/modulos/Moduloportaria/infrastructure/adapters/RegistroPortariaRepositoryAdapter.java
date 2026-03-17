@@ -366,6 +366,9 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
             var rec = recorrenciaRepository.findByNome(request.getTipoAcesso().toUpperCase())
                     .orElseThrow(() -> new RuntimeException("Recorrência não encontrada: " + request.getTipoAcesso()));
             v.setRecorrencia(rec);
+            if(request.getPlacaVeiculo()!=null && !request.getPlacaVeiculo().isEmpty()){
+                v.setPlacaCarro(request.getPlacaVeiculo());
+            }
             visitante.save(v);
             CadastroVisitante(new RegistroPortariaRequestDTO(request,v),v);
            return "Visitante atualizado";
