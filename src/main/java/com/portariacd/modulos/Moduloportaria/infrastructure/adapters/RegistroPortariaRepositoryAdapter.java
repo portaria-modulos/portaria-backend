@@ -209,7 +209,6 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
            );
            var visitante = resposta.getVisitante();
             if (Boolean.TRUE.equals(visitante.getBloqueioAcesso())) {
-                System.out.println("acesso negado");
                 throw new RuntimeException(
                         "Acesso de Visitante Bloqueado"
                 );
@@ -220,6 +219,7 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
             String nomeUrl = ValidaNomeImagem.criarDiretorio(file,pasta,endpointUrl);
             // cria a entrada de motorista
             EntradaVisitanteEntity entradaVisitante = new EntradaVisitanteEntity();
+            entradaVisitante.setFilial(usuarioFiscal.getFilial());
             entradaVisitante.setDataEntrada(LocalDateTime.now());
             entradaVisitante.setFiscalEntradaId(usuarioFiscal.getId());
             entradaVisitante.setNomeFiscal(usuarioFiscal.getNome());
@@ -227,7 +227,7 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
             resposta.setEntradaVisitante(entradaVisitante);
             // atualiza o status da entrada do motorista
             resposta.setStatus(StatusPortaria.AGUARDANDO_SAIDA);
-         RegistroVisitantePortariaEntity respostaSalva =  repository.save(resposta);
+            RegistroVisitantePortariaEntity respostaSalva =  repository.save(resposta);
         var historyEntrada = history.findByRegistroPortariaId(registroId);
         if(historyEntrada!=null){
             historyEntrada.UpdateHistoryInput(respostaSalva);
@@ -254,6 +254,7 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
         // valida o statas
             // cria a entrada de motorista
             SaidaVisitanteEntity saidaVisitante = new SaidaVisitanteEntity();
+            saidaVisitante.setFilial(usuarioFiscal.getFilial());
             saidaVisitante.setDataSaida(LocalDateTime.now());
             saidaVisitante.setFicalSaidaId(usuarioFiscal.getId());
             saidaVisitante.setNomeFiscal(usuarioFiscal.getNome());

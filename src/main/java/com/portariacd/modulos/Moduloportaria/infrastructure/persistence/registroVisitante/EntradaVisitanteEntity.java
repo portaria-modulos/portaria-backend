@@ -21,4 +21,5 @@ public class EntradaVisitanteEntity {
     private String nomeFiscal;
     private Long fiscalEntradaId;
     private String imagem;
+    private Integer filial;
 }

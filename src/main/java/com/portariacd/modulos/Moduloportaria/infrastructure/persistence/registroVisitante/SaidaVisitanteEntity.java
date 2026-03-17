@@ -22,6 +22,8 @@ public class SaidaVisitanteEntity {
     private Long ficalSaidaId;
     private String nomeFiscal;
     private String imagem;
+    private Integer filial;
+
 
 
 }

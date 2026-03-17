@@ -41,7 +41,6 @@ public class PortariaRegistroControler {
     public ResponseEntity<Map<String, String>> registro(@RequestParam("data")  String data,
                                                         @RequestParam("file") MultipartFile file,
                                                         UriComponentsBuilder builder) throws IOException {
-
         try {
              var conver = converteJson.conversor(data, RegistroPortariaRequestDTO.class);
             String resposta = service.cadastro(conver, file);

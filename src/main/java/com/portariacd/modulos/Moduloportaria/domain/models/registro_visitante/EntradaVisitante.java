@@ -9,12 +9,15 @@ public class EntradaVisitante {
     private String nomeFiscal;
     private Long fiscalEntradaId;
     private String imagem;
+    private Integer filial;
+
 
     public EntradaVisitante(EntradaVisitanteEntity entradaVisitante) {
         this.dataEntrada = entradaVisitante.getDataEntrada();
         this.nomeFiscal = entradaVisitante.getNomeFiscal();
         this.fiscalEntradaId = entradaVisitante.getFiscalEntradaId();
         this.imagem = entradaVisitante.getImagem();
+        this.filial = entradaVisitante.getFilial();
 
     }
 
@@ -48,5 +51,13 @@ public class EntradaVisitante {
 
     public void setNomeFiscal(String nomeFiscal) {
         this.nomeFiscal = nomeFiscal;
+    }
+
+    public Integer getFilial() {
+        return filial;
+    }
+
+    public void setFilial(Integer filial) {
+        this.filial = filial;
     }
 }

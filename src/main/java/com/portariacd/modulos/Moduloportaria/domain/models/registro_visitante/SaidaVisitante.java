@@ -10,11 +10,13 @@ public class SaidaVisitante {
     private Long ficalSaida;
     private String nomeFiscal;
     private String imagem;
+    private Integer filial;
     public SaidaVisitante(SaidaVisitanteEntity saidaVisitante) {
         this.dataSaida = saidaVisitante.getDataSaida();
         this.nomeFiscal = saidaVisitante.getNomeFiscal();
         this.ficalSaida = saidaVisitante.getFicalSaidaId();
         this.imagem = saidaVisitante.getImagem();
+        this.filial = saidaVisitante.getFilial();
     }
     public long getId() {
         return id;
@@ -55,5 +57,13 @@ public class SaidaVisitante {
 
     public void setFicalSaida(Long ficalSaida) {
         this.ficalSaida = ficalSaida;
+    }
+
+    public Integer getFilial() {
+        return filial;
+    }
+
+    public void setFilial(Integer filial) {
+        this.filial = filial;
     }
 }

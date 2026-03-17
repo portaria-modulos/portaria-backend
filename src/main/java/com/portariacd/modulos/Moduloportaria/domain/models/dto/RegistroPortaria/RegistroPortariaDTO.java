@@ -1,5 +1,4 @@
 package com.portariacd.modulos.Moduloportaria.domain.models.dto.RegistroPortaria;
-
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +26,6 @@ public record RegistroPortariaDTO(
         String dataAcesso,
         @NotNull
         Integer filialSolicitado
-
 ) {
     public RegistroPortariaDTO(RegistroVisitantePortariaEntity resposta) {
             this(
