@@ -11,6 +11,7 @@ public record VisitanteDTO(
          String nomeCompleto,
          String imagem,
          String ocupacao,
+         String placaVeiculo,
         //opcional
          Integer filial,
          String numeroTelefone,
@@ -24,6 +25,7 @@ public record VisitanteDTO(
                 v.getNomeCompleto(),
                 v.getImagem(),
                 v.getOcupacao(),
+                v.getPlacaVeiculo(),
                 v.getFilial(),
                 v.getNumeroTelefone(),
                 v.getDataCriacao(),
@@ -38,6 +40,7 @@ public record VisitanteDTO(
                 v.getNomeCompleto(),
                 v.getImagem(),
                 v.getOcupacao(),
+                v.getPlacaCarro(),
                 v.getFilial(),
                 v.getNumeroTelefone(),
                 v.getDataCriacao(),

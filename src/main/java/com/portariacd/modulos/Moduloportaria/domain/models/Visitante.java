@@ -17,6 +17,7 @@ public class Visitante {
 //    private StatusTipoDeAcesso tipoAcesso;
     private  String tipoPessoa;
     RequestRecorrenciaDTO recorrencia;
+    private String placaVeiculo;
 
     public Visitante(VisitanteEntity visitante) {
         this.id = visitante.getId();
@@ -33,6 +34,7 @@ public class Visitante {
             recorrencia = new RequestRecorrenciaDTO(visitante.getRecorrencia());
         }
         this.ativo = visitante.getAtivo();
+        this.placaVeiculo = visitante.getPlacaCarro();
 
     }
 
@@ -118,5 +120,13 @@ public class Visitante {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getPlacaVeiculo() {
+        return placaVeiculo;
+    }
+
+    public void setPlacaVeiculo(String placaVeiculo) {
+        this.placaVeiculo = placaVeiculo;
     }
 }
