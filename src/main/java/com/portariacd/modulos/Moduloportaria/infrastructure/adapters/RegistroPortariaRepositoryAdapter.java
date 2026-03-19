@@ -344,13 +344,22 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
 
     @Override
     @Transactional
-    public Page<RequestPortariaDTO> FindAllPortarias(Pageable pageable, Integer filial,String busca,Boolean ativo) {
+    public Page<RequestPortariaDTO> FindAllPortarias(Pageable pageable,
+                                                     Integer filial,
+                                                     String busca,
+                                                     Boolean ativo,
+                                                     LocalDate data,
+                                                     String status
+                                                     ) {
         Page<RequestPortariaDTO> page;
         var spec = Specification.allOf(
                 RegistroPortariaSpec.filial(filial),
                 RegistroPortariaSpec.busca(busca),
-                RegistroPortariaSpec.ativoRegistro(ativo)
+                RegistroPortariaSpec.ativoRegistro(ativo),
+                RegistroPortariaSpec.criacao(data),
+                RegistroPortariaSpec.ativoRegistroStatus(status)
                 );
+
         return   repository.findAll(spec,pageable).map(entity -> new RequestPortariaDTO(new RegistroVisitantePortaria(entity)));
     }
 

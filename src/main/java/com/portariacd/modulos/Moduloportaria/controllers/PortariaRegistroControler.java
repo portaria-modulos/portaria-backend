@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,15 +120,21 @@ public class PortariaRegistroControler {
     }
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'GERENCIAR_REGISTROS')")
     @GetMapping("findAll")
-    public ResponseEntity<Page<RequestPortariaDTO>> findAllRegistros(@RequestParam(value = "filial",required = false) Integer filial,
+    public ResponseEntity<Page<RequestPortariaDTO>> findAllRegistros(
+            @RequestParam(value = "filial",required = false) Integer filial,
                                                                      Pageable page,
                                                                      @RequestParam(value = "busca",required = false) String busca,
-                                                                     @RequestParam(value = "ativo",required = false) String ativo) {
+                                                                     @RequestParam(value = "ativo",required = false) String ativo,
+                                                                     @RequestParam(value = "data",required = false) LocalDate localDate,
+                                                                     @RequestParam(value = "status",required = false) String status
+
+
+            ) {
         Boolean ativoBool = null;
         if (ativo != null) {
             ativoBool = Boolean.parseBoolean(ativo);
         }
-        Page<RequestPortariaDTO> pageresponse= service.FindAllPortarias(page,filial,busca,ativoBool);
+        Page<RequestPortariaDTO> pageresponse= service.FindAllPortarias(page,filial,busca,ativoBool,localDate,status);
         return ResponseEntity.ok().body(pageresponse);
     }
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'VISUALIZAR_REGISTRO')")
