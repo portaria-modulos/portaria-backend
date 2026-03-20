@@ -25,6 +25,8 @@ public interface RegistroPortariaGatewayRepository {
      Map<String, List<RequestPortariaDTO>> FindAllStatus(String Status);
 
      Page<RequestPortariaDTO> listaPendentes(Pageable pageable, Integer filial,String busca,String status);
+    Page<RequestPortariaDTO> retornaEntradaIdVisitante(Pageable pageable,Long id,
+                                                       String busca,LocalDate dataAntes,LocalDate dataDepois);
 
     RequestPortariaDTO visulizarRegistro(Long registro);
     void deleteRegistroPortaria(Long registroId,Long usuarioId);

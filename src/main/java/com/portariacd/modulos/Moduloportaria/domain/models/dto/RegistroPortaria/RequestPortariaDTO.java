@@ -23,7 +23,7 @@ public record RequestPortariaDTO(
         EntradaVisitanteDTO entrada,
         SaidaVisitanteDTO saida,
         VisitanteDTO visitante,
-        UsuarioRequestDTO autorizador,
+        UsuarioAutorizadoDTO autorizador,
          Boolean prioridadeAtrasoAtivo,
          String prioridadeAviso,
         String prioridadeAtraso) {
@@ -44,7 +44,7 @@ public record RequestPortariaDTO(
                 e.getEntradaVisitante()!=null ? new EntradaVisitanteDTO(e.getEntradaVisitante()):null,
                 e.getSaidaVisitante()!=null ? new SaidaVisitanteDTO(e.getSaidaVisitante()):null,
                 e.getVisitante()!=null ? new VisitanteDTO(e.getVisitante()):null,
-                e.getCriadorId()!=null ? new UsuarioRequestDTO(e.getCriadorId()):null,
+                e.getCriadorId()!=null ? new UsuarioAutorizadoDTO(e.getCriadorId()):null,
                 e.getPrioridadeAtrasoAtivo(),
                 e.getPrioridadeAviso(),
                 e.getPrioridadeAtraso()
@@ -69,7 +69,7 @@ public record RequestPortariaDTO(
                 e.getEntradaVisitante()!=null ? new EntradaVisitanteDTO(e.getEntradaVisitante()):null,
                 e.getSaidaVisitante()!=null ? new SaidaVisitanteDTO(e.getSaidaVisitante()):null,
                 e.getVisitante()!=null ? new VisitanteDTO(e.getVisitante()):null,
-                e.getCriador()!=null ? new UsuarioRequestDTO(e.getCriador()):null,
+                e.getCriador()!=null ? new UsuarioAutorizadoDTO(e.getCriador()):null,
                 e.getPrioridadeAtrasoAtivo(),
                 e.getPrioridadeAviso(),
                 e.getPrioridadeAtraso()

@@ -42,6 +42,9 @@ public class CadastroPortariaService {
     public Map<String, List<RequestPortariaDTO>> FindaAllStatus(String status) {
         return repository.FindAllStatus(status);
     }
+    public Page<RequestPortariaDTO> retornaEntradaIdVisitante(Pageable pageable,Long id,String busca,LocalDate dataAntes,LocalDate dataDepois) {
+        return repository.retornaEntradaIdVisitante(pageable,id,busca,dataAntes,dataDepois);
+    }
 
     public Page<RequestPortariaDTO> listaPendentes(Pageable pageable, Integer filial,String busca,String status) {
         return repository.listaPendentes(pageable,filial,busca,status);

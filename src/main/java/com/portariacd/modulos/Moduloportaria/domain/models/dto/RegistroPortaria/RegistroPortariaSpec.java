@@ -4,12 +4,20 @@ import com.portariacd.modulos.Moduloportaria.domain.models.registro_visitante.St
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.VisitanteEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.recorrencia.Recorrencia;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.EntradaVisitanteEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.SaidaVisitanteEntity;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegistroPortariaSpec {
     public static Specification<RegistroVisitantePortariaEntity> filial(Integer filial){
@@ -76,6 +84,51 @@ public class RegistroPortariaSpec {
             }
 
             return cb.equal(cb.function("DATE", LocalDate.class, root.get("dataCriacao")), data);
+        };
+    }
+
+
+    public static Specification<RegistroVisitantePortariaEntity> buscaId(
+            Long id,
+            LocalDate dataEntrada,
+            LocalDate dataSaida
+    ) {
+        return (root, query, criteriaBuilder) -> {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            // JOIN visitante
+            Join<RegistroVisitantePortariaEntity, VisitanteEntity> visitanteJoin =
+                    root.join("visitante", JoinType.LEFT);
+
+            // JOIN entrada
+            Join<RegistroVisitantePortariaEntity, EntradaVisitanteEntity> entradaJoin =
+                    root.join("entradaVisitante", JoinType.LEFT);
+
+            // JOIN saída
+            Join<RegistroVisitantePortariaEntity, SaidaVisitanteEntity> saidaJoin =
+                    root.join("saidaVisitante", JoinType.LEFT);
+
+            // Filtro por ID
+            if (id != null) {
+                predicates.add(criteriaBuilder.equal(visitanteJoin.get("id"), id));
+            }
+
+            // Filtro data de entrada
+            if (dataEntrada != null) {
+                LocalDateTime inicio = dataEntrada.atStartOfDay();
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(
+                        entradaJoin.get("dataEntrada"), inicio));
+            }
+
+            // Filtro data de saída
+            if (dataSaida != null) {
+                LocalDateTime fim = dataSaida.atTime(LocalTime.MAX);
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(
+                        saidaJoin.get("dataSaida"), fim));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

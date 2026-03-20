@@ -466,7 +466,14 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
 
     }
 
-    ;
+    @Override
+    public Page<RequestPortariaDTO> retornaEntradaIdVisitante(Pageable pageable,Long id,String busca,LocalDate dataAntes,LocalDate dataDepois) {
+        var spec = Specification.allOf(
+                RegistroPortariaSpec.busca(busca),
+                RegistroPortariaSpec.buscaId(id,dataAntes,dataDepois)
+        );
+        return   repository.findAll(spec,pageable).map(entity -> new RequestPortariaDTO(new RegistroVisitantePortaria(entity)));
+    }
     private void salvaLog(UsuarioRequestDTO usuario, RegistroVisitantePortariaEntity registroVisitantePortaria,String acao){
        service.registrarLog(
                usuario,

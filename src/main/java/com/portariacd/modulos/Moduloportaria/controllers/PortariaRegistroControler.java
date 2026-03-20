@@ -184,4 +184,15 @@ public class PortariaRegistroControler {
        String smg = service.registroPortariaRequest(mapper,file);
         return ResponseEntity.ok().body(Map.of("msg",smg));
     }
+
+    @PreAuthorize("@permissaoService.hasPermission(authentication, 'GERENCIAR_REGISTROS')")
+    @GetMapping("entrada-vistante")
+    public ResponseEntity<Page<RequestPortariaDTO>> FInalAllEntradasVisitantes(
+            Pageable pageable,
+            @RequestParam(value = "visitanteId",required = false) Long id,@RequestParam(value = "busca",required = false) String busca,
+            @RequestParam(value = "dataAntes",required = false) LocalDate dataAntes,@RequestParam(value = "dataDespois",required = false) LocalDate dataDepois
+            ) {
+        Page<RequestPortariaDTO> pageresponse= service.retornaEntradaIdVisitante(pageable,id,busca,dataAntes,dataDepois);
+        return ResponseEntity.ok().body(pageresponse);
+    }
 }
