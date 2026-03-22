@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping
 public class AppControler {
     private final ConcurrentHashMap<String, String> tokenApp = new ConcurrentHashMap<>();
-    private final String versionApp = "1.0.5";
+    private final String versionApp = "1.0.6";
     @Value("${app.apk.path}")
     private String apkPath;
     @GetMapping("/download-app/{token}")
@@ -62,7 +62,7 @@ public class AppControler {
         // Dica: Tente não deixar a URL do Ngrok hardcoded, mas para teste funciona
         String urlApp = "http://10.220.112.111:8083/download-app/" + token;
 
-        var resposta = new AppDTO("App-monitoramento", versionApp, urlApp,"Correção de bug modulo recebimento!");
+        var resposta = new AppDTO("App-monitoramento", versionApp, urlApp,"Adicionando alerta ao card portaria!");
         return ResponseEntity.ok(resposta);
     }
     @PostConstruct

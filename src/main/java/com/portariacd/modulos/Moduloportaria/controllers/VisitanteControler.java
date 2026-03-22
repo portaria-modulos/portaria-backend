@@ -22,8 +22,12 @@ public class VisitanteControler {
     }
     @GetMapping("/lista")
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'GERENCIAR_USUARIOS')")
-    public ResponseEntity<Page<VisitanteDTO>> listVisitante(Pageable page,@RequestParam(name = "busca",required = false) String busca){
-        var lista = service.listaVisitante(page,busca);
+    public ResponseEntity<Page<VisitanteDTO>> listVisitante(
+            Pageable page,
+            @RequestParam(name = "busca",required = false) String busca,
+            @RequestParam(name = "filial",required = false) Integer filial
+    ){
+        var lista = service.listaVisitante(page,busca,filial);
         return ResponseEntity.ok(lista);
     }
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'DELETE_GLOBAL')")

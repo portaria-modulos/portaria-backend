@@ -1,16 +1,18 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence;
 
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 @Repository
-public interface VisitanteRepository extends JpaRepository<VisitanteEntity,Long> {
+public interface VisitanteRepository extends JpaRepository<VisitanteEntity,Long>, JpaSpecificationExecutor<VisitanteEntity> {
 
     @Query("select  p from VisitanteEntity p where p.numeroTelefone=:numero")
     Optional<VisitanteEntity> findByOneByNumeroTelefone(String numero);

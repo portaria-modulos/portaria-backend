@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface VisitanteGatewaysRepository {
-    Page<VisitanteDTO> listaVisitante(Pageable page, String busca);
+    Page<VisitanteDTO> listaVisitante(Pageable page, String busca,Integer filial);
     String deleteRegistro(Long visitanteid, Long usuarioId, StatusTypeDeleteVisitante T);
     VisitanteDTO buscaVisitante(Long visitanteId,String nome);
     Page<VisitanteFiltroDTO> listaVisitanteFiltro(Pageable page);

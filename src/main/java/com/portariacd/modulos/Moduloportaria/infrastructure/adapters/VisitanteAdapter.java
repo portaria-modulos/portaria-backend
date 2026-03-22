@@ -1,5 +1,6 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.adapters;
 
+import com.portariacd.modulos.Moduloportaria.infrastructure.adapters.Modulos.VisitantePortariaSpec;
 import com.portariacd.modulos.Moduloportaria.services.LogAcaoService;
 import com.portariacd.modulos.Moduloportaria.domain.gateways.VisitanteGatewaysRepository;
 import com.portariacd.modulos.Moduloportaria.domain.models.visitante.StatusTypeDeleteVisitante;
@@ -10,6 +11,7 @@ import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.*;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,14 +41,13 @@ public class VisitanteAdapter implements VisitanteGatewaysRepository {
         this.historyRepository = historyRepository;
     }
     @Override
-    public Page<VisitanteDTO> listaVisitante(Pageable page, String busca) {
-        Page<VisitanteDTO>  pageLista;
-        if(busca!=null && !busca.isEmpty()){
-            pageLista =  repository.findbyBusca(page,busca).map(VisitanteDTO::new);
-        }else {
-            pageLista = repository.findAll(page).map(VisitanteDTO::new);
-        }
-        return pageLista;
+    public Page<VisitanteDTO> listaVisitante(Pageable page, String busca,Integer filial) {
+        System.out.println("minha busca "+busca);
+     var spec =  Specification.allOf(
+             VisitantePortariaSpec.filial(filial),
+             VisitantePortariaSpec.busca(busca)
+        );
+        return repository.findAll(spec,page).map(VisitanteDTO::new);
     }
     @Override
     public Page<VisitanteFiltroDTO> listaVisitanteFiltro(Pageable page) {
