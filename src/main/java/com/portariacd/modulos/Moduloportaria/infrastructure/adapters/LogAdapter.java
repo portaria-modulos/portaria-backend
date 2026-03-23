@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
+
 @Component
 public class LogAdapter implements LogGatewayRepository {
     private final LogRepository repository;
@@ -24,10 +26,9 @@ public class LogAdapter implements LogGatewayRepository {
     };
     @Override
     public Page<LogAcaoDTO> listaAcoes(Pageable page, String busca) {
-        System.out.println("busca request "+busca);
         var spec = Specification.allOf(
               BuscaLogsSpec.busca(busca)
         );
-        return repository.findAll(spec,page).map(LogAcaoDTO::new);
+        return repository.findAll(spec,page).stream().sorted(Comparator.comparing(LogAcaoEntity::getId).reversed()).map(LogAcaoDTO::new);
     }
 };
