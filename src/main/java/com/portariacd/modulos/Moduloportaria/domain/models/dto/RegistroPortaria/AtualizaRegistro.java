@@ -12,6 +12,7 @@ public record AtualizaRegistro(
         String numeroTelefone,
         @NotBlank
         String placaVeiculo,
+        Integer filialSolicitado,
         @NotBlank
         String bloco,
         String  tipoPessoa,

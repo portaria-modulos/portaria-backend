@@ -80,6 +80,9 @@ public class RegistroVisitantePortariaEntity {
         this.nomeCompleto = update.nomeCompleto();
         this.bloco = update.bloco();
         this.ocupacaoLiberada = update.ocupacaoLiberada();
+        if (update.filialSolicitado() != null) {
+            this.filialSolicitado = update.filialSolicitado();
+        }
     }
 //    @PrePersist
 //    public void gerarId() {
