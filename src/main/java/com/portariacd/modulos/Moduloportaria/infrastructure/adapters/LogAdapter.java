@@ -29,6 +29,9 @@ public class LogAdapter implements LogGatewayRepository {
         var spec = Specification.allOf(
               BuscaLogsSpec.busca(busca)
         );
-        return repository.findAll(spec,page).stream().sorted(Comparator.comparing(LogAcaoEntity::getId).reversed()).map(LogAcaoDTO::new);
+        return (Page<LogAcaoDTO>)
+                repository.findAll(spec,page)
+                .stream().sorted(Comparator.comparing(LogAcaoEntity::getId).reversed())
+                .map(LogAcaoDTO::new);
     }
 };
