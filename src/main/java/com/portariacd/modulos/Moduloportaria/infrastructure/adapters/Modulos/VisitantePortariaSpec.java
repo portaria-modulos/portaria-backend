@@ -41,19 +41,13 @@ public class VisitantePortariaSpec {
 
                 predicates.add(cb.like(cb.lower(root.get("nomeCompleto")), link));
                 predicates.add(cb.like(cb.lower(root.get("placaCarro")), link));
-                predicates.add(cb.like(cb.lower(root.get("numeroTelefone")), link)); // ✅ corrigido
+                predicates.add(cb.like(cb.lower(root.get("numeroTelefone")), link));
                 predicates.add(cb.like(cb.lower(recorrenciaJoin.get("nome")), link));
-
-                // 👇 trata filial como número (melhor prática)
-                if (link.matches("\\d+")) {
-                    Integer numero = Integer.valueOf(link);
-                    predicates.add(cb.equal(root.get("filial"), numero));
-                }
 
                 return cb.or(predicates.toArray(new Predicate[0]));
             }
 
-            return cb.conjunction();
+            return null; // 🔥 melhor que conjunction()
         };
     }
     public static Specification<VisitanteEntity> ativoRegistro(Boolean ativo){

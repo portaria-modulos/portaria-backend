@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -42,12 +44,19 @@ public class VisitanteAdapter implements VisitanteGatewaysRepository {
     }
     @Override
     public Page<VisitanteDTO> listaVisitante(Pageable page, String busca,Integer filial) {
-        System.out.println("minha busca "+busca);
-     var spec =  Specification.allOf(
-             VisitantePortariaSpec.filial(filial),
-             VisitantePortariaSpec.busca(busca)
-        );
-        return repository.findAll(spec,page).map(VisitanteDTO::new);
+        List<Specification<VisitanteEntity>> specs = new ArrayList<>();
+
+        if (filial != null) {
+            specs.add(VisitantePortariaSpec.filial(filial));
+        }
+
+        if (busca != null && !busca.isEmpty()) {
+            specs.add(VisitantePortariaSpec.busca(busca));
+        }
+
+        Specification<VisitanteEntity> spec = Specification.allOf(specs);
+
+        return repository.findAll(spec, page).map(VisitanteDTO::new);
     }
     @Override
     public Page<VisitanteFiltroDTO> listaVisitanteFiltro(Pageable page) {
