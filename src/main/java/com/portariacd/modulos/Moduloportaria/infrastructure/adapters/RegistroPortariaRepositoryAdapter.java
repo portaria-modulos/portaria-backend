@@ -370,6 +370,13 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
             VisitanteEntity v = visitante.findById(request.getVisitanteId()).orElseThrow(
                     ()->new RuntimeException("Visitante não encontrado")
             );
+            if(file!=null){
+                if(v.getImagem()!=null){
+                    DelteImagem(v.getImagem(),"avatar");
+                }
+                String nameImagem = ValidaNomeImagem.criarDiretorio(file,"avatar",endpointUrl);
+                v.setImagem(nameImagem);
+            }
            if(v.getBloqueioAcesso()){
              throw new RuntimeException("Visitante bloqueado");
            }
