@@ -52,4 +52,9 @@ public class UsuarioFiliasAdapter implements FiliaisModulosGatewayRepository {
     public List<SistemaAcessoFilialUsuarioDTO> listaPermission() {
        return   respositoryAcesso.findAll().stream().map(SistemaAcessoFilialUsuarioDTO::new).toList();
     }
+
+    @Override
+    public List<SistemaAcessoFilialUsuarioDTO> listaFiliaisUsuario(Long id) {
+        return   repository.findAllUsuario(id).stream().map(SistemaAcessoFilialUsuarioDTO::new).toList();
+    }
 }

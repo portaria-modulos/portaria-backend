@@ -2,7 +2,6 @@ package com.portariacd.modulos.Moduloportaria.domain.models.dto.RegistroPortaria
 
 import com.portariacd.modulos.Moduloportaria.domain.models.registro_visitante.RegistroVisitantePortaria;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.VisitanteDTO;
-import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.UsuarioRequestDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
 
 import java.time.LocalDateTime;

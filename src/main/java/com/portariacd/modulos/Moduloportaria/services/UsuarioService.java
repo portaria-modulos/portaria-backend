@@ -23,7 +23,7 @@ public class UsuarioService{
        repository.registroUsuario(dto);
     }
 
-    public Page<UsuarioRequestDTO> listaUsuario(Pageable page,String busca) {
+    public Page<UsuarioRequestDTO> listaUsuario(Pageable page, String busca) {
         return repository.listaUsuario(page,busca);
     }
 

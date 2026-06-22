@@ -27,4 +27,9 @@ public class FilialModuloControler {
         var lista = service.lista();
         return  ResponseEntity.ok().body(lista);
     }
+    @GetMapping("/lista/{id}")
+    public ResponseEntity<List<SistemaAcessoFilialUsuarioDTO>> listaUsuario(@PathVariable Long id){
+        var lista = service.listafiliaisUsuario(id);
+        return  ResponseEntity.ok().body(lista);
+    }
 }

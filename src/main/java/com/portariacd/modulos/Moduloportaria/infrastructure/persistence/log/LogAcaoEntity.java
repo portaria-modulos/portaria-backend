@@ -25,7 +25,7 @@ public class LogAcaoEntity {
     private LocalDateTime dataHora;
     private Integer filial;
 
-    public LogAcaoEntity(UsuarioRequestDTO usuario, String acao,String descricao,Integer filial) {
+    public LogAcaoEntity(UsuarioRequestDTO usuario, String acao, String descricao, Integer filial) {
         this.usuarioId = usuario.id();
         this.usuario = usuario.nome();
         this.acao = acao;

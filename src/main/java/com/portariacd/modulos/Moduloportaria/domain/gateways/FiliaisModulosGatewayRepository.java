@@ -5,10 +5,12 @@ import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.Sistema
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.SistemaAcessoUsuarioDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.FiliaisModulesDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.ModuleDTO;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface FiliaisModulosGatewayRepository {
     void addPermission(List<FiliaisModulesDTO> pemission,Long usuarioId);
     List<SistemaAcessoFilialUsuarioDTO> listaPermission();
+    List<SistemaAcessoFilialUsuarioDTO> listaFiliaisUsuario(Long id);
 }

@@ -1,6 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.adapters;
 
 import com.portariacd.modulos.Moduloportaria.domain.gateways.LogGatewayRepository;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.UsuarioRequestDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.registro_visitante.LogAcaoDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.UsuarioRequestDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.adapters.buscaLog.BuscaLogsSpec;

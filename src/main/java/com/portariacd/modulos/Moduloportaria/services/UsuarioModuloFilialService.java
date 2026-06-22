@@ -22,6 +22,11 @@ public class UsuarioModuloFilialService {
         repository.addPermission(pemission,usuarioId);
     }
     public List<SistemaAcessoFilialUsuarioDTO> lista(){
-       return repository.listaPermission();
+
+        return repository.listaPermission();
+    }
+
+    public List<SistemaAcessoFilialUsuarioDTO> listafiliaisUsuario(Long id) {
+       return repository.listaFiliaisUsuario(id);
     }
 }

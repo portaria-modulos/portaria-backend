@@ -86,7 +86,7 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
         salvaLog(new UsuarioRequestDTO(usuarioCadastro),"CRIAR_USUARIO",msg);
 
     }
-    public Page<UsuarioRequestDTO> listaUsuario(Pageable page,String busca){
+    public Page<UsuarioRequestDTO> listaUsuario(Pageable page, String busca){
         Page<UsuarioRequestDTO> pageLista;
        if(busca !=null && !busca.isEmpty()){
           pageLista = repository.findAllByUsuario(page,busca)
@@ -119,7 +119,7 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
         usuarioLogado.setSessionLastLogin(LocalDateTime.now());
         repository.save(usuarioLogado);
         String tokenGerado = tokenConfigure.geraToken(usuarioModel,sessionId);
-        return new TokenResponse(tokenGerado,new usuarioRequestDTO(((UsuarioEntity) usuario).getId()));
+        return new TokenResponse(tokenGerado,new UsuarioRequestsDTO(((UsuarioEntity) usuario).getId()));
     }
 
     @Override
@@ -254,7 +254,7 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
     }
 
 
-    private void salvaLog(UsuarioRequestDTO usuario, String acao,String descricao){
+    private void salvaLog(UsuarioRequestDTO usuario, String acao, String descricao){
         String mensagem = String.format(
                 "[%s] Usuário: %s | Ação: %s | Descrição: %s",
                 LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),

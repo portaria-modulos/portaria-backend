@@ -481,7 +481,7 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
         );
         return   repository.findAll(spec,pageable).map(entity -> new RequestPortariaDTO(new RegistroVisitantePortaria(entity)));
     }
-    private void salvaLog(UsuarioRequestDTO usuario, RegistroVisitantePortariaEntity registroVisitantePortaria,String acao){
+    private void salvaLog(UsuarioRequestDTO usuario, RegistroVisitantePortariaEntity registroVisitantePortaria, String acao){
        service.registrarLog(
                usuario,
                acao,
