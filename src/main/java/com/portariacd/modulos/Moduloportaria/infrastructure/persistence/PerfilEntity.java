@@ -14,8 +14,6 @@ import java.util.Set;
 @Table(name = "perfil")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class PerfilEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,5 +25,37 @@ public class PerfilEntity {
     Set<PermissionEntity> permissoes;
     public PerfilEntity(Perfil pefil) {
         this.nome = pefil.getNome();
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public List<UsuarioEntity> getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(List<UsuarioEntity> usuario) {
+        this.usuario = usuario;
+    }
+
+    public Set<PermissionEntity> getPermissoes() {
+        return permissoes;
+    }
+
+    public void setPermissoes(Set<PermissionEntity> permissoes) {
+        this.permissoes = permissoes;
     }
 }

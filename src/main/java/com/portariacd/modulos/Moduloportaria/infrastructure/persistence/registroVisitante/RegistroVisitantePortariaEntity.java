@@ -18,8 +18,6 @@ import java.time.LocalDateTime;
 @Table(name = "registro_portaria")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class RegistroVisitantePortariaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,6 +93,148 @@ public class RegistroVisitantePortariaEntity {
 //    }
 
 
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNomeCompleto() {
+        return nomeCompleto;
+    }
+
+    public void setNomeCompleto(String nomeCompleto) {
+        this.nomeCompleto = nomeCompleto;
+    }
+
+    public VisitanteEntity getVisitante() {
+        return visitante;
+    }
+
+    public void setVisitante(VisitanteEntity visitante) {
+        this.visitante = visitante;
+    }
+
+    public String getPlacaVeiculo() {
+        return placaVeiculo;
+    }
+
+    public void setPlacaVeiculo(String placaVeiculo) {
+        this.placaVeiculo = placaVeiculo;
+    }
+
+    public String getOcupacaoLiberada() {
+        return ocupacaoLiberada;
+    }
+
+    public void setOcupacaoLiberada(String ocupacaoLiberada) {
+        this.ocupacaoLiberada = ocupacaoLiberada;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public SaidaVisitanteEntity getSaidaVisitante() {
+        return saidaVisitante;
+    }
+
+    public void setSaidaVisitante(SaidaVisitanteEntity saidaVisitante) {
+        this.saidaVisitante = saidaVisitante;
+    }
+
+    public EntradaVisitanteEntity getEntradaVisitante() {
+        return entradaVisitante;
+    }
+
+    public void setEntradaVisitante(EntradaVisitanteEntity entradaVisitante) {
+        this.entradaVisitante = entradaVisitante;
+    }
+
+    public StatusPortaria getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusPortaria status) {
+        this.status = status;
+    }
+
+    public UsuarioEntity getCriador() {
+        return criador;
+    }
+
+    public void setCriador(UsuarioEntity criador) {
+        this.criador = criador;
+    }
+
+    public Integer getFilialSolicitado() {
+        return filialSolicitado;
+    }
+
+    public void setFilialSolicitado(Integer filialSolicitado) {
+        this.filialSolicitado = filialSolicitado;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public String getProtocolo() {
+        return protocolo;
+    }
+
+    public void setProtocolo(String protocolo) {
+        this.protocolo = protocolo;
+    }
+
+    public String getBloco() {
+        return bloco;
+    }
+
+    public void setBloco(String bloco) {
+        this.bloco = bloco;
+    }
+
+    public Boolean getPrioridadeAtrasoAtivo() {
+        return prioridadeAtrasoAtivo;
+    }
+
+    public void setPrioridadeAtrasoAtivo(Boolean prioridadeAtrasoAtivo) {
+        this.prioridadeAtrasoAtivo = prioridadeAtrasoAtivo;
+    }
+
+    public String getPrioridadeAviso() {
+        return prioridadeAviso;
+    }
+
+    public void setPrioridadeAviso(String prioridadeAviso) {
+        this.prioridadeAviso = prioridadeAviso;
+    }
+
+    public String getPrioridadeAtraso() {
+        return prioridadeAtraso;
+    }
+
+    public void setPrioridadeAtraso(String prioridadeAtraso) {
+        this.prioridadeAtraso = prioridadeAtraso;
+    }
 }
 
