@@ -4,5 +4,5 @@ import com.portariacd.modulos.Moduloportaria.domain.models.dto.SistemaAcessoDTO;
 
 import java.util.List;
 
-public record usuarioModuloDto (List<SistemaAcessoDTO> acess){
+public record UsuarioModuloDto(List<SistemaAcessoDTO> acess){
 }
