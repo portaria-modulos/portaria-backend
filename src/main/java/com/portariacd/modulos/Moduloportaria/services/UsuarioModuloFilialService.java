@@ -1,12 +1,8 @@
 package com.portariacd.modulos.Moduloportaria.services;
 
 import com.portariacd.modulos.Moduloportaria.domain.gateways.FiliaisModulosGatewayRepository;
-import com.portariacd.modulos.Moduloportaria.domain.gateways.ModuloGatewayRepository;
-import com.portariacd.modulos.Moduloportaria.domain.models.dto.FilialDTOMod;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.SistemaAcessoFilialUsuarioDTO;
-import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.SistemaAcessoUsuarioDTO;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.FiliaisModulesDTO;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.ModuleDTO;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.FiliaisModulesDTO;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 

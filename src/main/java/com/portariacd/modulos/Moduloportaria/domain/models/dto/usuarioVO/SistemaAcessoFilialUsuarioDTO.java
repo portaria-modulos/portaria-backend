@@ -1,7 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO;
 
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.Filial;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.UsuarioFilialEntity;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.Filial;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.UsuarioFilialEntity;
 
 public record SistemaAcessoFilialUsuarioDTO(
         Long id,

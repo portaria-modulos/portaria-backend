@@ -1,8 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioEntity;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.Filial;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.Filial;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.funcao.SistemaAcesso;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

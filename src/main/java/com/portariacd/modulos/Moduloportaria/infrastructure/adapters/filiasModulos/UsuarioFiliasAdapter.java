@@ -2,13 +2,12 @@ package com.portariacd.modulos.Moduloportaria.infrastructure.adapters.filiasModu
 
 import com.portariacd.modulos.Moduloportaria.domain.gateways.FiliaisModulosGatewayRepository;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.SistemaAcessoFilialUsuarioDTO;
-import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.SistemaAcessoUsuarioDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.FilialRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioRepository;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.FiliaisModulesDTO;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.UsuarioFiliaisRepository;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.UsuarioFilialEntity;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.FiliaisModulesDTO;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.UsuarioFiliaisRepository;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.UsuarioFilialEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,11 +1,10 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence;
 
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.Filial;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.Filial;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

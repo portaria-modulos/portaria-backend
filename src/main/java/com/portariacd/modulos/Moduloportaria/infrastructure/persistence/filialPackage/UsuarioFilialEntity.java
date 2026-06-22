@@ -1,7 +1,6 @@
-package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial;
+package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage;
 
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioEntity;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.funcao.SistemaAcesso;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

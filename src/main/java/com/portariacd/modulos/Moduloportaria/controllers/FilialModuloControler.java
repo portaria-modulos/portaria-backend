@@ -1,7 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.controllers;
 
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.SistemaAcessoFilialUsuarioDTO;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.JsonModuleFilial;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.JsonModuleFilial;
 import com.portariacd.modulos.Moduloportaria.services.UsuarioModuloFilialService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

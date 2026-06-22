@@ -4,7 +4,7 @@ import com.portariacd.modulos.Moduloportaria.domain.gateways.FilialInterfaceGate
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.filialDTO.RegistroFilialDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.filialDTO.RequestFilialDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.FilialRepository;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.Filial;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.Filial;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

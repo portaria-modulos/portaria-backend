@@ -133,4 +133,5 @@ public class EntregaChaveHistory {
     public String getStatus() {
         return status;
     }
+
 }

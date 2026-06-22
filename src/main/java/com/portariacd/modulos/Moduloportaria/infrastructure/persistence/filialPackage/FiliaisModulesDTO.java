@@ -1,4 +1,4 @@
-package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial;
+package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage;
 
 import jakarta.validation.constraints.NotNull;
 

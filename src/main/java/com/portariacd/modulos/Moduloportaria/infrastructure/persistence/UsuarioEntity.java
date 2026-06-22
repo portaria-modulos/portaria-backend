@@ -1,7 +1,6 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.portariacd.modulos.Moduloportaria.domain.models.auth.Usuario;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial.UsuarioFilialEntity;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.UsuarioFilialEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.UsuarioModuloEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
 import jakarta.persistence.*;

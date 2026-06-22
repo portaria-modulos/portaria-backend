@@ -1,6 +1,5 @@
-package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filial;
+package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage;
 
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.UsuarioModuloEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
