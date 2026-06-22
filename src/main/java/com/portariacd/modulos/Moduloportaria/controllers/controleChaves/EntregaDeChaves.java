@@ -1,0 +1,66 @@
+package com.portariacd.modulos.Moduloportaria.controllers.controleChaves;
+
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.ArmarioDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.armario.ArmarioResponseDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.DesvolucaoChaveDto;
+import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.EntregaChavesCDService;
+import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.EntregaChavesDTO;
+import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.method.DesvolucaoChaveUsuarioDto;
+import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.method.FactureMetodChave;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("entregaChaves")
+public class EntregaDeChaves {
+    @Autowired
+    private EntregaChavesCDService service;
+    @PostMapping
+    public ResponseEntity<String> entregaChaves(@RequestBody @Valid EntregaChavesDTO a){
+        service.entregaDeChaves(a);
+        return ResponseEntity.ok("");
+    }
+
+    @PostMapping("devolucao")
+    public ResponseEntity<String> devolucaoChaves(@RequestBody @Valid DesvolucaoChaveDto a){
+        return ResponseEntity.ok(service.liberacaoDeChaves(a));
+    }
+    @GetMapping("lista")
+    public ResponseEntity<List<ArmarioResponseDTO>> ListaDeArmariosFilial(@RequestParam("filial") Integer filial){
+        return ResponseEntity.ok(service.listaDeArmariosCd(filial));
+    }
+    @GetMapping("top3/{filial}")
+    public ResponseEntity<?> Ultims(@PathVariable Long filial){
+        var lista = service.TresulmicasRetiradas(filial);
+        return ResponseEntity.ok(lista);
+    }
+    @GetMapping("detalhes/arm/{arm}/chave/{chave}/filial/{filial}")
+    public ResponseEntity<?> Detalhes(
+            @PathVariable Long arm,
+            @PathVariable Integer chave,
+            @PathVariable Long filial) {
+
+        var lista = service.detalhesChaves(filial, arm, chave);
+        return ResponseEntity.ok(lista);
+    }
+    @PostMapping("devolucao/user")
+    public ResponseEntity<String> devolucaoChavesUser(@RequestBody @Valid FactureMetodChave a){
+        return ResponseEntity.ok(service.liberacaoDeChavesFacture(a));
+    }
+
+    @GetMapping("ocupados/arm/filial")
+    public ResponseEntity<?> ocupadaFilial(
+            @RequestParam("arm") Long arm,
+            @RequestParam("filial") Long filial) {
+
+        var lista = service.ocupadoFilial(filial, arm);
+        return ResponseEntity.ok(lista);
+    }
+
+
+
+}
