@@ -14,7 +14,7 @@ public class CorsConfigurations {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://192.168.100.250",
-                                "http://10.220.122.70",
+                                "http://10.220.122.255",
                                 "http://10.220.112.111")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders(
