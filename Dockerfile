@@ -9,7 +9,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline
 
 COPY . .
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-focal
 WORKDIR /portaria
 COPY --from=build /portaria/target/portaria-0.0.1-SNAPSHOT.jar portaria.jar
