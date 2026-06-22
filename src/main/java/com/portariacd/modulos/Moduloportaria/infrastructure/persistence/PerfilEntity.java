@@ -1,13 +1,10 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence;
+
 import com.portariacd.modulos.Moduloportaria.domain.models.auth.Perfil;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.funcao.PermissionEntity;
-import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.UsuarioModuloEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.util.List;
 import java.util.Set;
 @Entity
