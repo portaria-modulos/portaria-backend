@@ -3,10 +3,8 @@ package com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO;
 import com.portariacd.modulos.Moduloportaria.domain.models.auth.Usuario;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.perfilDTO.PerfilResponseDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioEntity;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 public record UsuarioRequestDTO(
         long id,
         String nome,
@@ -33,7 +31,6 @@ public record UsuarioRequestDTO(
                 usuario.getModulos()!=null?usuario.getModulos().stream().map(e->new SistemaAcessoUsuarioDTO(e.getModulo())).toList():null
         );
     }
-
     public UsuarioRequestDTO(Usuario usuario) {
         this(usuario.getId(),usuario.getNome(),
                 usuario.getAvatar()!=null? usuario.getAvatar() : null
@@ -48,6 +45,4 @@ public record UsuarioRequestDTO(
         );
 
     }
-
-
 }
