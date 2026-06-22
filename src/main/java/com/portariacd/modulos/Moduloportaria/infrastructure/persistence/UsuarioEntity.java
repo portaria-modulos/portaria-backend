@@ -1,13 +1,12 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence;
+
 import com.portariacd.modulos.Moduloportaria.domain.models.auth.Usuario;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.filialPackage.UsuarioFilialEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.modulosPerfil.UsuarioModuloEntity;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registroVisitante.RegistroVisitantePortariaEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,14 +14,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuario")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class UsuarioEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -128,4 +128,156 @@ public class UsuarioEntity implements UserDetails {
         return true;
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public String getOcupacaoOperacional() {
+        return ocupacaoOperacional;
+    }
+
+    public void setOcupacaoOperacional(String ocupacaoOperacional) {
+        this.ocupacaoOperacional = ocupacaoOperacional;
+    }
+
+    public int getFilial() {
+        return filial;
+    }
+
+    public void setFilial(int filial) {
+        this.filial = filial;
+    }
+
+    public PerfilEntity getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(PerfilEntity perfil) {
+        this.perfil = perfil;
+    }
+
+    public List<RegistroVisitantePortariaEntity> getRegistros() {
+        return registros;
+    }
+
+    public void setRegistros(List<RegistroVisitantePortariaEntity> registros) {
+        this.registros = registros;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public Set<UsuarioModuloEntity> getModulos() {
+        return modulos;
+    }
+
+    public void setModulos(Set<UsuarioModuloEntity> modulos) {
+        this.modulos = modulos;
+    }
+
+    public Set<UsuarioFilialEntity> getFiliais() {
+        return filiais;
+    }
+
+    public void setFiliais(Set<UsuarioFilialEntity> filiais) {
+        this.filiais = filiais;
+    }
+
+    public String getCurrentSession() {
+        return currentSession;
+    }
+
+    public void setCurrentSession(String currentSession) {
+        this.currentSession = currentSession;
+    }
+
+    public LocalDateTime getSessionExpiresAt() {
+        return sessionExpiresAt;
+    }
+
+    public void setSessionExpiresAt(LocalDateTime sessionExpiresAt) {
+        this.sessionExpiresAt = sessionExpiresAt;
+    }
+
+    public String getSessionDevice() {
+        return sessionDevice;
+    }
+
+    public void setSessionDevice(String sessionDevice) {
+        this.sessionDevice = sessionDevice;
+    }
+
+    public LocalDateTime getSessionLastLogin() {
+        return sessionLastLogin;
+    }
+
+    public void setSessionLastLogin(LocalDateTime sessionLastLogin) {
+        this.sessionLastLogin = sessionLastLogin;
+    }
+
+    public String getSessionIp() {
+        return sessionIp;
+    }
+
+    public void setSessionIp(String sessionIp) {
+        this.sessionIp = sessionIp;
+    }
+
+    public String getUltimoNavegador() {
+        return ultimoNavegador;
+    }
+
+    public void setUltimoNavegador(String ultimoNavegador) {
+        this.ultimoNavegador = ultimoNavegador;
+    }
 }
