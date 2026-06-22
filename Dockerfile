@@ -10,7 +10,7 @@ RUN mvn dependency:go-offline
 COPY src ./src
 
 # Executa a limpeza e empacotamento limpo ignorando testes
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 # Estágio 2: Imagem final enxuta (JRE 17)
 FROM eclipse-temurin:17-jre-focal
