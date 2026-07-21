@@ -1,4 +1,5 @@
 package com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.UsuarioConsumerRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,15 +19,23 @@ public class UsuarioConsumerChaves {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(unique = true, nullable = false)
     private String matricula;
+    @Column(name = "gmcore_id", unique = true, nullable = false)
     private String GmcoreId;
     private String nome;
     private String setor;
     private Integer filial;
     private Boolean ativo;
+    @Column(name = "creat_at")
     private OffsetDateTime creatAt;
     private Long usuarioInsert;
-
+    @OneToOne(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "biometria_facial_id")
+    private BiometriaFacial biometriaFacial;
     public UsuarioConsumerChaves(UsuarioConsumerRequestDTO usm) {
         this.matricula = usm.matricula();
         this.GmcoreId = usm.GmcoreId();

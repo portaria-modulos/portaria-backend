@@ -1,10 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves;
-
-import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.BlocoChavesResponseDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-
 @Entity
 @Table(name = "BLOCO_ARMARIO")
 @AllArgsConstructor

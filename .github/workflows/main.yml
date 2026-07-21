@@ -16,8 +16,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           # Verifique se o nome do secret no GitHub está EXATAMENTE assim
-          username: ${{ secrets.DOKERHUB_USER }} 
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOKERHUB_USE }}
+          password: ${{ secrets.DOCKERHUB_PASSWOR }}
 
       - name: Build e push da imagem
         run: |
