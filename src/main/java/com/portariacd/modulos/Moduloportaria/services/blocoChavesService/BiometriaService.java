@@ -18,7 +18,7 @@ import java.util.Base64;
 @Service
 public class BiometriaService {
 
-    private final String IA_URL = "http://localhost:5000/"; // URL do seu container DeepFace
+    private final String IA_URL = "http://10.70.70.166:5000/"; // URL do seu container DeepFace
     @Autowired
     private CriptografiaService criptografiaService;
     public float[] extrairEmbedding(String fotoBase64) {
@@ -32,6 +32,7 @@ public class BiometriaService {
             // O RestTemplate pode retornar uma lista de Double.
             // Precisamos converter para float[] primitivo para o pgvector
             List<Double> embeddingList = (List<Double>) response.getBody().get("embedding");
+            System.out.println("lista "+embeddingList);
 
             float[] embeddingArray = new float[embeddingList.size()];
             for (int i = 0; i < embeddingList.size(); i++) {

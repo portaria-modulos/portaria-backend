@@ -28,21 +28,14 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
     Optional<UsuarioConsumerChaves> findByUsuario(String s, String matricula);
 
     @Query(value = """
-
             SELECT
-                                                           u.id,
-                                                           u.matricula,
-                                                           u.gmcore_id AS gmcoreId,
-                                                           u.nome,
-                                                           u.setor,
-                                                           u.filial,
-                                                           u.ativo
-                                                       FROM BIOMETRIA_FACIAL b
-                                                       JOIN USUARIO_CONSUMER_CHAVES u
-                                                           ON u.id = b.usuario_id
-                                                       WHERE b.embedding <=> CAST(:vetor AS vector) < 0.35
-                                                       ORDER BY b.embedding <=> CAST(:vetor AS vector)
-                                                       LIMIT 1;
+                u.id,
+                u.nome,
+                b.embedding <=> CAST(:vetor AS vector) AS distancia
+            FROM BIOMETRIA_FACIAL b
+            JOIN USUARIO_CONSUMER_CHAVES u ON u.id = b.usuario_id
+            ORDER BY b.embedding <=> CAST(:vetor AS vector)
+            LIMIT 5;;
     """, nativeQuery = true)
     UsuarioProjection buscarUsuarioPelaBiometriad(
             @Param("vetor") String vetor
@@ -61,7 +54,7 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
             ON u.id = b.usuario_id
         WHERE (b.embedding <=> (:vetor)::vector) < 0.35
         ORDER BY b.embedding <=> (:vetor)::vector
-        LIMIT 1;
+        LIMIT 5;
 """, nativeQuery = true)
     UsuarioProjection buscarUsuarioPelaBiometria(
             @Param("vetor") String vetor

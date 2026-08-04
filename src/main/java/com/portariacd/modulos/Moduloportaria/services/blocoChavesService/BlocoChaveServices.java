@@ -64,11 +64,18 @@ public class BlocoChaveServices {
             chave.setStatus(StatusArmario.LIVRE);
             novosBlocos.add(chave);
         }
-        var salvos = chavesRepository.saveAll(novosBlocos);
+        if(novosBlocos.size() > 1000){
+            throw new RuntimeException("Limiete maximo de armarios 1000");
+        }
+        if(ultimoNumero.longValue()<100) {
+            var salvos = chavesRepository.saveAll(novosBlocos);
+            return salvos.stream()
+                    .map(BlocoChavesResponseDTO::new)
+                    .toList();
+        }
+        throw new RuntimeException("Limiete excedido");
 
-        return salvos.stream()
-                .map(BlocoChavesResponseDTO::new)
-                .toList();
+
     }
     @Cacheable(value = "armarios", key = "#filial + ':' + #tipo")
     public ArmarioResponseDTO unicoArmariodId(Long armarioId, Tipo tipo) {

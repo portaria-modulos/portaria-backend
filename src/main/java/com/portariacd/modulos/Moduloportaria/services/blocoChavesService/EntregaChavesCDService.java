@@ -1,7 +1,9 @@
 package com.portariacd.modulos.Moduloportaria.services.blocoChavesService;
 
+import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.*;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.armario.ArmarioResponseDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.ChaveDevolucao;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.DesvolucaoChaveDto;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.EntregaChavesResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.EntregaChavesResponseDetalhesDTO;
@@ -34,7 +36,7 @@ public class EntregaChavesCDService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private EntregaChaveHistoryRepository entregaChaveHistoryRepository;
-    public String entregaDeChaves(EntregaChavesDTO d){
+    public DevolucaoInteface entregaDeChaves(EntregaChavesDTO d){
         var armario = armarioRepository.findById(d.armarioId())
                 .orElseThrow(
                         ()->new RuntimeException("Armario não encontrado")
@@ -99,8 +101,10 @@ public class EntregaChavesCDService {
         repository.save(entrega);
         chavesRepository.save(chave);
         entregaChaveHistoryRepository.save(history);
-
-        return "d";
+        var s =new  EntregaToken();
+        s.setMsg("Entregue com sucesso");
+        s.setType("Emtrega");
+        return s;
 
     }
 
@@ -154,7 +158,7 @@ public class EntregaChavesCDService {
 //
 //    }
 
-    public String liberacaoDeChaves(DesvolucaoChaveDto item){
+    public DevolucaoInteface liberacaoDeChaves(DesvolucaoChaveDto item){
         var armario = armarioRepository.findById(item.item().arm())
                 .orElseThrow(
                         ()->new RuntimeException("Armario não encontrado")
@@ -186,7 +190,10 @@ public class EntregaChavesCDService {
             repository.save(entregaAtiva.get());
             chavesRepository.save(chave);
             entregaChaveHistoryRepository.save(history);
-            return "Chave devololvida com sucesso";
+            var e = new DevolucaoChaves();
+            e.setType("Devolucao");
+            e.setMsg("Devolvida com sucesso");
+            return e ;
         }
         throw new RuntimeException(
                 "Chave entregue,\nInforme chave em devolução"
@@ -246,5 +253,31 @@ public class EntregaChavesCDService {
             }
          return  new EntregaChavesResponseDetalhesDTO(e,usuario);
         }).toList();
+    }
+
+    public DevolucaoInteface devolverChavePorToken(@Valid EntregaChavesDTO dto) {
+        var armario = armarioRepository.findById(dto.armarioId())
+                .orElseThrow(
+                        ()->new RuntimeException("Armario não encontrado")
+                );
+        var chave = armario.getBlocoChaves().stream()
+                .filter(c -> c.getNumero().equals(dto.numeroDaChave()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Chave não encontrada"));
+        var entregaAtiva = repository.findEntregaAtiva(chave.getId());
+        if(entregaAtiva.isPresent()){
+            liberacaoDeChaves(new DesvolucaoChaveDto(dto.usuarioId(),new ChaveDevolucao(chave.getNumero(),armario.getId())));
+            var e = new DevolucaoChaves();
+            e.setType("Devolucao");
+            e.setMsg("Devolvida com sucesso");
+            return e;
+        }else{
+            entregaDeChaves(dto);
+            var s =new  EntregaToken();
+            s.setMsg("Entregue com sucesso");
+            s.setType("Emtrega");
+          return s;
+
+        }
     }
 }

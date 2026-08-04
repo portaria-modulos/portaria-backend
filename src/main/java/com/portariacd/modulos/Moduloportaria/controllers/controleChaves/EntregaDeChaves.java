@@ -21,14 +21,18 @@ public class EntregaDeChaves {
     @Autowired
     private EntregaChavesCDService service;
     @PostMapping
-    public ResponseEntity<String> entregaChaves(@RequestBody @Valid EntregaChavesDTO a){
-        service.entregaDeChaves(a);
-        return ResponseEntity.ok("");
+    public ResponseEntity<DevolucaoInteface> entregaChaves(@RequestBody @Valid EntregaChavesDTO a){
+       var response =  service.entregaDeChaves(a);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("devolucao")
-    public ResponseEntity<String> devolucaoChaves(@RequestBody @Valid DesvolucaoChaveDto a){
+    public ResponseEntity<DevolucaoInteface> devolucaoChaves(@RequestBody @Valid DesvolucaoChaveDto a){
         return ResponseEntity.ok(service.liberacaoDeChaves(a));
+    }
+    @PostMapping("devolucao/token")
+    public ResponseEntity<DevolucaoInteface> devolucaoChavesToekn(@RequestBody @Valid EntregaChavesDTO dto){
+        return ResponseEntity.ok(service.devolverChavePorToken(dto));
     }
     @GetMapping("lista")
     public ResponseEntity<List<ArmarioResponseDTO>> ListaDeArmariosFilial(@RequestParam("filial") Integer filial){
