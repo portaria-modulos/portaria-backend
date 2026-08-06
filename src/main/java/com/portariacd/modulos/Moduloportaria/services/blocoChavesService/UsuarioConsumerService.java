@@ -70,10 +70,11 @@ public class UsuarioConsumerService {
         var usuario =  repository.findById(idusuario).orElseThrow(()->new RuntimeException("Usuario não entrado"));
        var usuarioComChavesAtivoNoUsuario = entregaChaveRepository.entregaChaveUsuarioAtivoFalse(idusuario);
         if(usuarioComChavesAtivoNoUsuario!=null){
+        var valor =    usuarioComChavesAtivoNoUsuario.stream().map(e->e.getBlocoChaves().getNumero());
             String mensagem  = """
                     Erro ao deletar usuario:\n
                     Usuario com chave ativa: %s
-                    """.formatted(usuarioComChavesAtivoNoUsuario.stream().map(e->e.getBlocoChaves().getNumero()));
+                    """.formatted(valor);
             throw new RuntimeException(mensagem);
         }
         repository.delete(usuario);
