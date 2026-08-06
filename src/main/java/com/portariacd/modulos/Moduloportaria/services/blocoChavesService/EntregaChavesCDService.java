@@ -275,7 +275,7 @@ public class EntregaChavesCDService {
             entregaDeChaves(dto);
             var s =new  EntregaToken();
             s.setMsg("Entregue com sucesso");
-            s.setType("Emtrega");
+            s.setType("Entrega");
           return s;
 
         }

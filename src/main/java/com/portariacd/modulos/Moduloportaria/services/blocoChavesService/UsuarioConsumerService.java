@@ -1,9 +1,8 @@
 package com.portariacd.modulos.Moduloportaria.services.blocoChavesService;
 
-import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.BiometriaFacial;
-import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.BiometriaRepository;
-import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioConsumerChaves;
-import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioProjection;
+import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.DevolucaoInteface;
+import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.EntregaToken;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.UsuarioConsumerRequestDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +25,8 @@ public class UsuarioConsumerService {
     private CriptografiaService criptografiaService;
     @Autowired
     private BiometriaRepository biometriaRepository;
+    @Autowired
+    private EntregaChaveRepository entregaChaveRepository;
     public Map<String, String> cadastroDeUsuario(UsuarioConsumerRequestDTO usm) throws Exception {
         var usuario = repository.findByUsuario(usm.GmcoreId(),usm.matricula());
         if(usuario.isPresent()){
@@ -61,5 +62,26 @@ public class UsuarioConsumerService {
             throw new RuntimeException("Usuario não encontrado");
         }
        return usuario;
+    }
+    public DevolucaoInteface deleteUsuario(Long idusuario) {
+
+        var usuario =  repository.findById(idusuario).orElseThrow(()->new RuntimeException("Usuario não entrado"));
+        if(usuario==null){
+            throw new RuntimeException("Usuario não encontrado");
+        }
+       var usuarioComChavesAtivoNoUsuario = entregaChaveRepository.entregaChaveUsuarioAtivoFalse(idusuario);
+        if(usuarioComChavesAtivoNoUsuario.isPresent()){
+            String mensagem  = """
+                    Erro ao deletar usuario:\n
+                    Usuario com chave ativa: %s
+                    """.formatted(usuarioComChavesAtivoNoUsuario.get().getBlocoChaves().getNumero());
+            throw new RuntimeException(mensagem);
+        }
+
+        repository.delete(usuario);
+        var s =new EntregaToken();
+          s.setMsg("Usuario deletado");
+           s.setType("Entrega");
+           return s;
     }
 }

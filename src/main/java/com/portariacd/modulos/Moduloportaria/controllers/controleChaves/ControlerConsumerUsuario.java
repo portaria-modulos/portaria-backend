@@ -39,4 +39,10 @@ public class ControlerConsumerUsuario {
         UsuarioProjection l = service.extrairEmbedding(bio.base64());
         return ResponseEntity.ok(l);
     }
+
+    @PostMapping("/delelete/user")
+    public ResponseEntity<DevolucaoInteface> deleteUsuario(@RequestParam(name = "usuarioId") @Valid Long id){
+        DevolucaoInteface l = service.deleteUsuario(id);
+        return ResponseEntity.ok(l);
+    }
 }

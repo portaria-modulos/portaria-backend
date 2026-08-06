@@ -17,7 +17,6 @@ import java.util.Base64;
 
 @Service
 public class BiometriaService {
-
     private final String IA_URL = "http://10.220.112.111:5000/"; // URL do seu container DeepFace
     @Autowired
     private CriptografiaService criptografiaService;
@@ -49,7 +48,6 @@ public class BiometriaService {
         RestTemplate restTemplate = new RestTemplate();
         Map<String, String> request = new HashMap<>();
         request.put("base64", fotoBase64);
-
         try {
             ResponseEntity<Map> response = restTemplate.postForEntity(IA_URL+"reconhecer", request, Map.class);
 
