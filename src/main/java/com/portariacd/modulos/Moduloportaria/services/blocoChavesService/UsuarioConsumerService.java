@@ -73,7 +73,7 @@ public class UsuarioConsumerService {
             String mensagem  = """
                     Erro ao deletar usuario:\n
                     Usuario com chave ativa: %s
-                    """.formatted(usuarioComChavesAtivoNoUsuario.getBlocoChaves().getNumero());
+                    """.formatted(usuarioComChavesAtivoNoUsuario.stream().map(e->e.getBlocoChaves().getNumero()));
             throw new RuntimeException(mensagem);
         }
         repository.delete(usuario);
