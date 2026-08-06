@@ -72,7 +72,7 @@ public class UsuarioConsumerService {
             throw new RuntimeException("Usuario não encontrado");
         }
        var usuarioComChavesAtivoNoUsuario = entregaChaveRepository.entregaChaveUsuarioAtivoFalse(idusuario);
-        if(usuarioComChavesAtivoNoUsuario.isPresent()){
+        if(usuarioComChavesAtivoNoUsuario!=null){
             String mensagem  = """
                     Erro ao deletar usuario:\n
                     Usuario com chave ativa: %s
