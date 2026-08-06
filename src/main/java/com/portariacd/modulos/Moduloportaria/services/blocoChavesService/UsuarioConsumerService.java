@@ -5,6 +5,7 @@ import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.EntregaT
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.UsuarioConsumerRequestDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,7 @@ public class UsuarioConsumerService {
         }
        return usuario;
     }
+    @Transactional
     public DevolucaoInteface deleteUsuario(Long idusuario) {
 
         var usuario =  repository.findById(idusuario).orElseThrow(()->new RuntimeException("Usuario não entrado"));
