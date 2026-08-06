@@ -68,9 +68,6 @@ public class UsuarioConsumerService {
     public DevolucaoInteface deleteUsuario(Long idusuario) {
 
         var usuario =  repository.findById(idusuario).orElseThrow(()->new RuntimeException("Usuario não entrado"));
-        if(usuario==null){
-            throw new RuntimeException("Usuario não encontrado");
-        }
        var usuarioComChavesAtivoNoUsuario = entregaChaveRepository.entregaChaveUsuarioAtivoFalse(idusuario);
         if(usuarioComChavesAtivoNoUsuario!=null){
             String mensagem  = """
