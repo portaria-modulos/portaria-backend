@@ -40,8 +40,8 @@ public class ControlerConsumerUsuario {
         return ResponseEntity.ok(l);
     }
 
-    @PostMapping("/delelete/user")
-    public ResponseEntity<DevolucaoInteface> deleteUsuario(@RequestParam(name = "usuarioId") @Valid Long id){
+    @GetMapping("/delelete/user")
+    public ResponseEntity<DevolucaoInteface> deleteUsuario(@RequestParam(name = "usuarioId") Long id){
         DevolucaoInteface l = service.deleteUsuario(id);
         return ResponseEntity.ok(l);
     }
