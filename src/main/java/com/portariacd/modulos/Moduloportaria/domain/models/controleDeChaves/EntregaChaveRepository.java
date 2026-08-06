@@ -48,5 +48,5 @@ WHERE rn <= 1
 
     List<EntregaChave> id(long id);
     @Query("select chave from EntregaChave chave where chave.usuarioIdRetirada = :idUsuario and chave.entregue = false")
-    List<EntregaChave> entregaChaveUsuarioAtivoFalse(@Param("idUsuario") Long idUsuario);
+    EntregaChave entregaChaveUsuarioAtivoFalse(@Param("idUsuario") Long idUsuario);
 }

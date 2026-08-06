@@ -76,10 +76,9 @@ public class UsuarioConsumerService {
             String mensagem  = """
                     Erro ao deletar usuario:\n
                     Usuario com chave ativa: %s
-                    """.formatted(usuarioComChavesAtivoNoUsuario.get().getBlocoChaves().getNumero());
+                    """.formatted(usuarioComChavesAtivoNoUsuario.getBlocoChaves().getNumero());
             throw new RuntimeException(mensagem);
         }
-
         repository.delete(usuario);
         var s =new EntregaToken();
           s.setMsg("Usuario deletado");
