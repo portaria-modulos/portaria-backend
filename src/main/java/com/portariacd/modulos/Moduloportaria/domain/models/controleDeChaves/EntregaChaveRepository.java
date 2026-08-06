@@ -47,6 +47,6 @@ WHERE rn <= 1
     List<EntregaChave> findTop3PorArmarioDaFilial(@Param("filial") Long filial);
 
     List<EntregaChave> id(long id);
-    @Query("select chave from EntregaChave chave where chave.usuarioIdRetirada = :idUsuario and chave.entregue = :false")
+    @Query("select chave from EntregaChave chave where chave.usuarioIdRetirada = :idUsuario and chave.entregue = false")
     Optional<EntregaChave> entregaChaveUsuarioAtivoFalse(Long idusuario);
 }
