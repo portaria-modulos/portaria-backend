@@ -53,8 +53,8 @@ public class UsuarioConsumerService {
 
      return Map.of("msg","Usuario criado com sucesso");
     }
-    public List<UsuarioConsumerRequestDTO> lista() {
-       return repository.findAllUsuario().stream().map(UsuarioConsumerRequestDTO::new).toList();
+    public List<UsuarioConsumerResponseDTO> lista() {
+       return repository.findAllUsuario().stream().map(UsuarioConsumerResponseDTO::new).toList();
     }
     public UsuarioProjection extrairEmbedding(@NotBlank String s) {
         var biometria = service.extrairEmbeddingFace(s);

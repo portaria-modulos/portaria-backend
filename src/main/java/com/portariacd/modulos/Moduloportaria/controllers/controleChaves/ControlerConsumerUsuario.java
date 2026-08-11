@@ -1,6 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.controllers.controleChaves;
 
 import com.portariacd.modulos.Moduloportaria.controllers.BlocoControler.BiometriaImagem;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioConsumerResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioProjection;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.UsuarioConsumerRequestDTO;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.UsuarioConsumerService;
@@ -29,7 +30,7 @@ public class ControlerConsumerUsuario {
         return ResponseEntity.ok(resposta);
     }
     @GetMapping
-    public ResponseEntity<List<UsuarioConsumerRequestDTO>> lista(){
+    public ResponseEntity<List<UsuarioConsumerResponseDTO>> lista(){
         var resposta =service.lista();
         return ResponseEntity.ok(resposta);
     }
