@@ -5,6 +5,8 @@ import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.EntregaT
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.UsuarioConsumerRequestDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 public class UsuarioConsumerService {
     @Autowired
     private UsuarioConsumerRepository repository;
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     private BiometriaService service;
     @Autowired
@@ -64,23 +68,58 @@ public class UsuarioConsumerService {
         }
        return usuario;
     }
+
+
+    // ... dentro da sua classe Service
+
+
     @Transactional
     public DevolucaoInteface deleteUsuario(Long idusuario) {
 
-        var usuario =  repository.findById(idusuario).orElseThrow(()->new RuntimeException("Usuario não entrado"));
-       var usuarioComChavesAtivoNoUsuario = entregaChaveRepository.entregaChaveUsuarioAtivoFalse(idusuario);
-        if(usuarioComChavesAtivoNoUsuario!=null){
-        var valor =    usuarioComChavesAtivoNoUsuario.stream().map(e->e.getBlocoChaves().getNumero());
-            String mensagem  = """
-                    Erro ao deletar usuario:\n
-                    Usuario com chave ativa: %s
-                    """.formatted(valor);
-            throw new RuntimeException(mensagem);
+        var usuario = repository.findById(idusuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        var usuarioComChavesAtivoNoUsuario = entregaChaveRepository.entregaChaveUsuarioAtivoFalse(idusuario);
+
+        if (usuarioComChavesAtivoNoUsuario.isEmpty()) {
+
+            Long idBio = (usuario.getBiometriaFacial() != null) ? usuario.getBiometriaFacial().getId() : null;
+
+            // 1. Remove a referência na tabela de usuário usando o id do usuário
+            entityManager.createNativeQuery("UPDATE usuario_consumer_chaves SET biometria_facial_id = NULL WHERE id = :idUsuario")
+                    .setParameter("idUsuario", idusuario)
+                    .executeUpdate();
+
+            // 2. Deleta a biometria pelo ID correto dela (SQL puro)
+            if (idBio != null) {
+                entityManager.createNativeQuery("DELETE FROM biometria_facial WHERE id = :idBio")
+                        .setParameter("idBio", idBio)
+                        .executeUpdate();
+            }
+
+            // 3. Limpa o cache do Hibernate para ele não tentar buscar a biometria apagada
+            entityManager.clear();
+
+            // 4. Deleta o usuário de forma limpa pelo ID
+            repository.deleteById(idusuario);
+            repository.flush();
+
+            var s = new EntregaToken();
+            s.setMsg("Usuario deletado");
+            s.setType("Entrega");
+            return s;
         }
-        repository.delete(usuario);
-        var s =new EntregaToken();
-          s.setMsg("Usuario deletado");
-           s.setType("Entrega");
-           return s;
+
+        String valoresChaves = usuarioComChavesAtivoNoUsuario.stream()
+                .map(e -> e.getBlocoChaves().getNumero())
+                .distinct()
+                .toList().toString();
+
+        String mensagem = """
+        Erro ao deletar usuario:
+        Usuario com chave(s) ativa(s): %s
+        """.formatted(valoresChaves);
+
+        throw new RuntimeException(mensagem);
     }
 }

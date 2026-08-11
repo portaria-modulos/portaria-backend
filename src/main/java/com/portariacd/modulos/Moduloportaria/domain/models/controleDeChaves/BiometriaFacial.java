@@ -23,13 +23,13 @@ public class BiometriaFacial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(
-            name = "usuario_id",
-            nullable = false,
-            unique = true
-    )
-    private UsuarioConsumerChaves usuario;
+//    @OneToOne
+//    @JoinColumn(
+//            name = "usuario_id",
+//            nullable = false,
+//            unique = true
+//    )
+//    private UsuarioConsumerChaves usuario;
 
     // O embedding é o array de floats que representa o rosto
     // Deve ser armazenado como um tipo que suporte grandes textos (BLOB ou TEXT)
@@ -40,7 +40,6 @@ public class BiometriaFacial {
     private OffsetDateTime dataCadastro;
 
     public BiometriaFacial(UsuarioConsumerChaves usuario, float[] embeddingCriptografado, OffsetDateTime dataCadastro) {
-        this.usuario = usuario;
         this.embedding = embeddingCriptografado;
         this.dataCadastro = dataCadastro;
     }

@@ -38,9 +38,9 @@ public class EntregaDeChaves {
     public ResponseEntity<List<ArmarioResponseDTO>> ListaDeArmariosFilial(@RequestParam("filial") Integer filial){
         return ResponseEntity.ok(service.listaDeArmariosCd(filial));
     }
-    @GetMapping("top3/{filial}")
-    public ResponseEntity<?> Ultims(@PathVariable Long filial){
-        var lista = service.TresulmicasRetiradas(filial);
+    @GetMapping("top3/{filial}/arm/{id}")
+    public ResponseEntity<?> Ultims(@PathVariable Long filial,@PathVariable Long id){
+        var lista = service.TresulmicasRetiradas(filial,id);
         return ResponseEntity.ok(lista);
     }
     @GetMapping("detalhes/arm/{arm}/chave/{chave}/filial/{filial}")

@@ -33,9 +33,9 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
                 u.nome,
                 b.embedding <=> CAST(:vetor AS vector) AS distancia
             FROM BIOMETRIA_FACIAL b
-            JOIN USUARIO_CONSUMER_CHAVES u ON u.id = b.usuario_id
+             LEFT JOIN  USUARIO_CONSUMER_CHAVES u ON u.biometria_facial_id= b.id
             ORDER BY b.embedding <=> CAST(:vetor AS vector)
-            LIMIT 5;;
+            LIMIT 5;
     """, nativeQuery = true)
     UsuarioProjection buscarUsuarioPelaBiometriad(
             @Param("vetor") String vetor
@@ -50,8 +50,8 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
             u.filial,
             u.ativo
         FROM BIOMETRIA_FACIAL b
-        JOIN USUARIO_CONSUMER_CHAVES u
-            ON u.id = b.usuario_id
+        LEFT JOIN USUARIO_CONSUMER_CHAVES u
+            ON u.biometria_facial_id= b.id
         WHERE (b.embedding <=> (:vetor)::vector) < 0.35
         ORDER BY b.embedding <=> (:vetor)::vector
         LIMIT 5;

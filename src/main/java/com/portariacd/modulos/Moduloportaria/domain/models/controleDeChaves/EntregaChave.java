@@ -12,7 +12,7 @@ public class EntregaChave {
     private long id;
 
     // Qual chave foi entregue
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "bloco_chaves_id", nullable = false)
     private BlocoChaves blocoChaves;
 

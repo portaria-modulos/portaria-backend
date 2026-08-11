@@ -36,6 +36,7 @@ public class EntregaChavesCDService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private EntregaChaveHistoryRepository entregaChaveHistoryRepository;
+
     public DevolucaoInteface entregaDeChaves(EntregaChavesDTO d){
         var armario = armarioRepository.findById(d.armarioId())
                 .orElseThrow(
@@ -84,7 +85,7 @@ public class EntregaChavesCDService {
         entrega.setMatriculaColaborador(usuarioConsumer.get().getMatricula());
         entrega.setNomeColaborador(usuarioConsumer.get().getNome());
         entrega.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
-        entrega.setUsuarioIdRetirada(usuarioEntrega.getId());
+        entrega.setUsuarioIdRetirada(usuarioConsumer.get().getId());
         entrega.setDataHoraRetirada(OffsetDateTime.now());
         entrega.setFilialId(armario.getFilial());
         entrega.setEntregue(false);
@@ -93,7 +94,7 @@ public class EntregaChavesCDService {
         history.setMatriculaColaborador(usuarioConsumer.get().getMatricula());
         history.setNomeColaborador(usuarioConsumer.get().getNome());
         history.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
-        history.setUsuarioIdRetirada(usuarioEntrega.getId());
+        history.setUsuarioIdRetirada(usuarioConsumer.get().getId());
         history.setDataHoraRetirada(OffsetDateTime.now());
         history.setFilialId(armario.getFilial());
         history.setBlocoChaves(chave.getId());
@@ -107,6 +108,7 @@ public class EntregaChavesCDService {
         return s;
 
     }
+
 
 //    public String entregaDeChaves(EntregaChavesDTO d){
 //        var armario = armarioRepository.findById(d.armarioId())
@@ -166,6 +168,7 @@ public class EntregaChavesCDService {
         var usuarioEntrega =  usuarioRepository.findById(item.usuarioId()).orElseThrow(
                 ()->new RuntimeException("Usuario não encontrada")
         );
+
         var chave = armario.getBlocoChaves().stream()
                 .filter(c -> c.getNumero().equals(item.item().chave()))
                 .findFirst()
@@ -177,7 +180,7 @@ public class EntregaChavesCDService {
             chave.setDisponivel(true);
             var history = new EntregaChaveHistory();
             history.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
-            history.setUsuarioIdRetirada(usuarioEntrega.getId());
+            history.setUsuarioIdRetirada(chave.getUsuarioOcupacaoId());
             history.setDataHoraRetirada(OffsetDateTime.now());
             history.setFilialId(armario.getFilial());
             history.setBlocoChaves(chave.getId());
@@ -207,8 +210,8 @@ public class EntregaChavesCDService {
         return armarioRepository.findAllFilial(filial).stream().map(ArmarioResponseDTO::new).toList();
     }
 
-    public List<EntregaChavesResponseDTO> TresulmicasRetiradas(Long filial){
-        return repository.findTop3PorArmarioDaFilial(filial).stream().map(EntregaChavesResponseDTO::new).toList();
+    public List<EntregaChavesResponseDTO> TresulmicasRetiradas(Long filial,Long id){
+        return repository.findTop3PorArmarioDaFilial(filial,id).stream().map(EntregaChavesResponseDTO::new).toList();
     }
 
     public EntregaChavesResponseDetalhesDTO detalhesChaves(Long filial, Long arm, Integer chave) {

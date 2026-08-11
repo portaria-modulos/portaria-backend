@@ -39,12 +39,13 @@ WITH ultimas_entregas AS (
     INNER JOIN ARMARIO a
         ON a.id = b.armario_id
     WHERE a.filial = :filial
+    and a.id = :id
 )
 SELECT *
 FROM ultimas_entregas
 WHERE rn <= 1
 """, nativeQuery = true)
-    List<EntregaChave> findTop3PorArmarioDaFilial(@Param("filial") Long filial);
+    List<EntregaChave> findTop3PorArmarioDaFilial(@Param("filial") Long filial,@Param("id") Long id);
 
     List<EntregaChave> id(long id);
     @Query("select chave from EntregaChave chave where chave.usuarioIdRetirada = :idUsuario and chave.entregue = false")
