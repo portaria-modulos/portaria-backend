@@ -21,23 +21,23 @@ public class BiometriaService {
     @Autowired
     private CriptografiaService criptografiaService;
     public float[] extrairEmbedding(String fotoBase64) {
+        System.out.println("base " + fotoBase64);
         RestTemplate restTemplate = new RestTemplate();
         Map<String, String> request = new HashMap<>();
         request.put("base64", fotoBase64);
-
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(IA_URL+"processar", request, Map.class);
+            ResponseEntity<Map> response = restTemplate.postForEntity(IA_URL + "processar", request, Map.class);
 
-            // O RestTemplate pode retornar uma lista de Double.
-            // Precisamos converter para float[] primitivo para o pgvector
-            List<Double> embeddingList = (List<Double>) response.getBody().get("embedding");
-            System.out.println("lista "+embeddingList);
+            Map body = response.getBody();
+            if (body == null || !body.containsKey("embedding") || body.get("embedding") == null) {
+                throw new RuntimeException("A IA não retornou o campo 'embedding'. Resposta recebida: " + body);
+            }
 
+            List<Double> embeddingList = (List<Double>) body.get("embedding");
             float[] embeddingArray = new float[embeddingList.size()];
             for (int i = 0; i < embeddingList.size(); i++) {
                 embeddingArray[i] = embeddingList.get(i).floatValue();
             }
-
             return embeddingArray;
 
         } catch (Exception e) {

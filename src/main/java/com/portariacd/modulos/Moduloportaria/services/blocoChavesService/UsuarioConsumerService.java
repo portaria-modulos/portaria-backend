@@ -44,6 +44,8 @@ public class UsuarioConsumerService {
         }
 
         var biometria = service.extrairEmbedding(usm.imagemFacial());
+        System.out.println("chegou aqui "+biometria.length);
+
         if(biometria!=null) {
             var usuarioChaves = new UsuarioConsumerChaves(usm);
             BiometriaFacial biometriaFacial = new BiometriaFacial(usuarioChaves, biometria, OffsetDateTime.now());
