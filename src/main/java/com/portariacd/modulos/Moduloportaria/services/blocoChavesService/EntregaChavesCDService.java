@@ -69,8 +69,13 @@ public class EntregaChavesCDService {
         if(contemChaves.isPresent()){
             System.out.println();
             if (contemChaves.get().getBlocoChaves().getArmario().getId() == chave.getArmario().getId()){
+                var smd = """
+                        Colaborador com chave Ativa no usuario
+                        Usuario: %s
+                        chave: %d
+                        """.formatted(contemChaves.get().getBlocoChaves().getUsuarioOcupacao(),contemChaves.get().getBlocoChaves().getNumero());
                 throw new RuntimeException(
-                        "Colaborador com chave Ativa no usuario! \n  Chave:  " +contemChaves.get().getBlocoChaves().getNumero()
+                        smd
                 );
             }
         }
