@@ -26,7 +26,7 @@ public class ControlerConsumerUsuario {
     private UsuarioConsumerService service;
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
     @PostMapping
-    public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestBody @Valid UsuarioConsumerRequestDTO res, @RequestParam(value = "file",required = true)MultipartFile file) throws Exception {
+    public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestParam("res") @Valid UsuarioConsumerRequestDTO res, @RequestParam(value = "file",required = true)MultipartFile file) throws Exception {
         var resposta =service.cadastroDeUsuario(res,file);
         return ResponseEntity.ok(resposta);
     }
