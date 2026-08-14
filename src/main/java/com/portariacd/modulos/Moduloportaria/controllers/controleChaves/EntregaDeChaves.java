@@ -40,7 +40,7 @@ public class EntregaDeChaves {
     }
     @GetMapping("top3/{filial}/arm/{id}")
     public ResponseEntity<?> Ultims(@PathVariable Long filial,@PathVariable Long id){
-        var lista = service.TresulmicasRetiradas(filial,id);
+        var lista = service.TresUlmicasRetiradas(filial,id);
         return ResponseEntity.ok(lista);
     }
     @GetMapping("detalhes/arm/{arm}/chave/{chave}/filial/{filial}")

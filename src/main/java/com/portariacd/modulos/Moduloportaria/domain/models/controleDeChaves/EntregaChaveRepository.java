@@ -43,9 +43,9 @@ WITH ultimas_entregas AS (
 )
 SELECT *
 FROM ultimas_entregas
-WHERE rn <= 1
+WHERE rn <= 50
 """, nativeQuery = true)
-    List<EntregaChave> findTop3PorArmarioDaFilial(@Param("filial") Long filial,@Param("id") Long id);
+    List<EntregaChave> findUltimo50PorArmarioDaFilial(@Param("filial") Long filial,@Param("id") Long id);
 
     List<EntregaChave> id(long id);
     @Query("select chave from EntregaChave chave where chave.usuarioIdRetirada = :idUsuario and chave.entregue = false")

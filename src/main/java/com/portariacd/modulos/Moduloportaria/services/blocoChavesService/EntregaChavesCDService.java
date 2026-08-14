@@ -70,7 +70,7 @@ public class EntregaChavesCDService {
             System.out.println();
             if (contemChaves.get().getBlocoChaves().getArmario().getId() == chave.getArmario().getId()){
                 var smd = """
-                        Colaborador com chave Ativa no usuario
+                        Chave ocupada!
                         Usuario: %s
                         chave: %d
                         """.formatted(contemChaves.get().getBlocoChaves().getUsuarioOcupacao(),contemChaves.get().getBlocoChaves().getNumero());
@@ -215,8 +215,8 @@ public class EntregaChavesCDService {
         return armarioRepository.findAllFilial(filial).stream().map(ArmarioResponseDTO::new).toList();
     }
 
-    public List<EntregaChavesResponseDTO> TresulmicasRetiradas(Long filial,Long id){
-        return repository.findTop3PorArmarioDaFilial(filial,id).stream().map(EntregaChavesResponseDTO::new).toList();
+    public List<EntregaChavesResponseDTO> TresUlmicasRetiradas(Long filial,Long id){
+        return repository.findUltimo50PorArmarioDaFilial(filial,id).stream().map(EntregaChavesResponseDTO::new).toList();
     }
 
     public EntregaChavesResponseDetalhesDTO detalhesChaves(Long filial, Long arm, Integer chave) {

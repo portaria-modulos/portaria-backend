@@ -139,7 +139,7 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
     }
 
     @Transactional
-    private RegistroVisitantePortariaEntity CadastroVisitante(RegistroPortariaRequestDTO req, VisitanteEntity visitanteRequest){
+    public RegistroVisitantePortariaEntity CadastroVisitante(RegistroPortariaRequestDTO req, VisitanteEntity visitanteRequest){
         var usuario = usuarioRepository.findById(req.getCriadorId()).orElseThrow(
                 ()->new RuntimeException("Erro ao buscar usuario!")
         );
