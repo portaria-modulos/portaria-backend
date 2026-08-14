@@ -6,6 +6,7 @@ import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.Biometr
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,8 @@ public class BlocoControler {
         return ResponseEntity.ok().body(service.lista());
     }
     @PostMapping("/biometria")
-    public float[] biometria(@RequestBody @Valid BiometriaImagem bio){
-      return biometriaService.extrairEmbedding(bio.base64());
+    public float[] biometria(@RequestParam("file") @Valid MultipartFile file){
+      return biometriaService.extrairEmbedding(file);
     }
 
 }

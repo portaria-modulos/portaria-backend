@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,8 @@ public class ControlerConsumerUsuario {
     private UsuarioConsumerService service;
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
     @PostMapping
-    public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestBody @Valid UsuarioConsumerRequestDTO res) throws Exception {
-        var resposta =service.cadastroDeUsuario(res);
+    public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestBody @Valid UsuarioConsumerRequestDTO res, @RequestParam(value = "file",required = true)MultipartFile file) throws Exception {
+        var resposta =service.cadastroDeUsuario(res,file);
         return ResponseEntity.ok(resposta);
     }
     @GetMapping

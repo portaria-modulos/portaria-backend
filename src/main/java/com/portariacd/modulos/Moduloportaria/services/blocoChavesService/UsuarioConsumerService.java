@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class UsuarioConsumerService {
     private BiometriaRepository biometriaRepository;
     @Autowired
     private EntregaChaveRepository entregaChaveRepository;
-    public Map<String, String> cadastroDeUsuario(UsuarioConsumerRequestDTO usm) throws Exception {
+    public Map<String, String> cadastroDeUsuario(UsuarioConsumerRequestDTO usm, MultipartFile file) throws Exception {
         var usuario = repository.findByUsuario(usm.GmcoreId(),usm.matricula());
         if(usuario.isPresent()){
 
@@ -43,7 +44,7 @@ public class UsuarioConsumerService {
             throw new RuntimeException("Colaborador ja cadastrado");
         }
 
-        var biometria = service.extrairEmbedding(usm.imagemFacial());
+        var biometria = service.extrairEmbedding(file);
         System.out.println("chegou aqui "+biometria.length);
 
         if(biometria!=null) {
