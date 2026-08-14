@@ -4,6 +4,7 @@ import com.portariacd.modulos.Moduloportaria.controllers.BlocoControler.Biometri
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioConsumerResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioProjection;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.UsuarioConsumerRequestDTO;
+import com.portariacd.modulos.Moduloportaria.infrastructure.config.ConverteJson;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.UsuarioConsumerService;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.UsuarioId;
 import jakarta.validation.Valid;
@@ -23,11 +24,14 @@ import java.util.Objects;
 @RequestMapping("consumer")
 public class ControlerConsumerUsuario {
     @Autowired
+    private ConverteJson converteJson;
+    @Autowired
     private UsuarioConsumerService service;
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
     @PostMapping
-    public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestPart("res") @Valid UsuarioConsumerRequestDTO res, @RequestParam(value = "file",required = true)MultipartFile file) throws Exception {
-        var resposta =service.cadastroDeUsuario(res,file);
+    public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestPart("res") @Valid String res, @RequestParam(value = "file",required = true)MultipartFile file) throws Exception {
+       var conv = converteJson.conversor(res,UsuarioConsumerRequestDTO.class);
+        var resposta =service.cadastroDeUsuario(conv,file);
         return ResponseEntity.ok(resposta);
     }
     @GetMapping
@@ -37,8 +41,8 @@ public class ControlerConsumerUsuario {
     }
 
     @PostMapping("/biometria/user")
-    public ResponseEntity<UsuarioProjection> Validbiometria(@RequestBody @Valid BiometriaImagem bio){
-        UsuarioProjection l = service.extrairEmbedding(bio.base64());
+    public ResponseEntity<UsuarioProjection> Validbiometria(@RequestParam("file") MultipartFile file){
+        UsuarioProjection l = service.extrairEmbedding(file);
         return ResponseEntity.ok(l);
     }
 

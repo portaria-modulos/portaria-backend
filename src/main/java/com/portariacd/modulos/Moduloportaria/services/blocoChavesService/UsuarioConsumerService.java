@@ -59,21 +59,16 @@ public class UsuarioConsumerService {
     public List<UsuarioConsumerResponseDTO> lista() {
        return repository.findAllUsuario().stream().map(UsuarioConsumerResponseDTO::new).toList();
     }
-    public UsuarioProjection extrairEmbedding(@NotBlank String s) {
-        var biometria = service.extrairEmbeddingFace(s);
+    public UsuarioProjection extrairEmbedding(MultipartFile file) {
+        var biometria = service.extrairEmbeddingFace(file);
         String vetor = Arrays.toString(biometria)
                 .replace(" ", "");
-
-        System.out.println("eb "+vetor);
         var usuario =  repository.buscarUsuarioPelaBiometria(vetor);
         if(usuario==null){
             throw new RuntimeException("Usuario não encontrado");
         }
        return usuario;
     }
-
-
-    // ... dentro da sua classe Service
 
 
     @Transactional
