@@ -43,7 +43,7 @@ WITH ultimas_entregas AS (
 )
 SELECT *
 FROM ultimas_entregas
-WHERE rn <= 50
+WHERE rn <= 2
 """, nativeQuery = true)
     List<EntregaChave> findUltimo50PorArmarioDaFilial(@Param("filial") Long filial,@Param("id") Long id);
 
