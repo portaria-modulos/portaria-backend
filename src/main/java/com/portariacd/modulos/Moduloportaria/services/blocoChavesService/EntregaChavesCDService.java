@@ -58,7 +58,7 @@ public class EntregaChavesCDService {
         }
         var usuarioConsumer = usuarioConsumerRepository.buscaUsuario(d.gmIDMatricula());
         if (!usuarioConsumer.isPresent()){
-            throw new RuntimeException("Colaborador não cadastrado!");
+            throw new UsuarioConsumerValidation("Colaborador não cadastrado!");
         }
         if(Long.parseLong(usuarioConsumer.get().getFilial().toString())!=armario.getFilial()){
             throw new UsuarioConsumerValidation("Colaborador Diferente da filial!",false);
