@@ -64,7 +64,7 @@ public class EntregaChavesCDService {
             throw new RuntimeException("Colaborador Diferente da filial!");
         }
         var usuarioEntrega =  usuarioRepository.findById(d.usuarioId()).orElseThrow(
-                ()->new RuntimeException("Usuario não encontrada")
+                ()->new UsuarioConsumerValidation("Usuario não encontrado",false)
         );
         var contemChaves = repository.findEntregaUsuario(usuarioConsumer.get().getMatricula(),armario.getId());
         if(contemChaves.isPresent()){
