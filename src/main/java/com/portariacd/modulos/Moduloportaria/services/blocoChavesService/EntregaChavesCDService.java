@@ -11,6 +11,7 @@ import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPers
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.BlocoChavesRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioRepository;
+import com.portariacd.modulos.Moduloportaria.infrastructure.validation.exeption.UsuarioConsumerValidation;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.method.DesvolucaoChaveUsuarioDto;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.method.FactureMetodChave;
 import jakarta.validation.Valid;
@@ -171,7 +172,7 @@ public class EntregaChavesCDService {
                         ()->new RuntimeException("Armario não encontrado")
                 );
         var usuarioEntrega =  usuarioRepository.findById(item.usuarioId()).orElseThrow(
-                ()->new RuntimeException("Usuario não encontrada")
+                ()->new UsuarioConsumerValidation("Usuario não encontrado",false)
         );
 
         var chave = armario.getBlocoChaves().stream()
@@ -209,6 +210,7 @@ public class EntregaChavesCDService {
         );
 
     }
+
 
 
     public List<ArmarioResponseDTO> listaDeArmariosCd(Integer filial){

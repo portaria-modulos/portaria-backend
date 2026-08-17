@@ -52,6 +52,11 @@ public class ExeptionValidation {
         return buildErrorResponse(exception, HttpStatus.UNAUTHORIZED, request,exception.getMessage());
 
     }
+    @ExceptionHandler(UsuarioConsumerValidation.class)
+    public ResponseEntity<ErroApiUsuarioDTO> handleVUsuario(UsuarioConsumerValidation exception, HttpServletRequest request) {
+        return buildErrorResponseUsuario(exception, HttpStatus.UNAUTHORIZED, request);
+
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
@@ -71,6 +76,17 @@ public class ExeptionValidation {
                 status.value(),
                 status.getReasonPhrase(),
                 msg,
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(status).body(errorDTO);
+    }
+    private ResponseEntity<ErroApiUsuarioDTO> buildErrorResponseUsuario(UsuarioConsumerValidation ex, HttpStatus status, HttpServletRequest request) {
+        ErroApiUsuarioDTO errorDTO = new ErroApiUsuarioDTO(
+                OffsetDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                ex.getMessage(),
+                ex.isCritico(),
                 request.getRequestURI()
         );
         return ResponseEntity.status(status).body(errorDTO);
