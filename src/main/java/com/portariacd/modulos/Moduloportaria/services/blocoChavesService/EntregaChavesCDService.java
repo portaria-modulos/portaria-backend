@@ -61,7 +61,7 @@ public class EntregaChavesCDService {
             throw new RuntimeException("Colaborador não cadastrado!");
         }
         if(Long.parseLong(usuarioConsumer.get().getFilial().toString())!=armario.getFilial()){
-            throw new RuntimeException("Colaborador Diferente da filial!");
+            throw new UsuarioConsumerValidation("Colaborador Diferente da filial!",false);
         }
         var usuarioEntrega =  usuarioRepository.findById(d.usuarioId()).orElseThrow(
                 ()->new UsuarioConsumerValidation("Usuario não encontrado",false)
