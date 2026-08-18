@@ -7,4 +7,5 @@ public interface UsuarioProjection {
     String getSetor();
     Integer getFilial();
     Boolean getAtivo();
+    String cpf();
 }

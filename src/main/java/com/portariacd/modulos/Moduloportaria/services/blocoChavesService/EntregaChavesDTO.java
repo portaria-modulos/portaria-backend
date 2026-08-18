@@ -11,7 +11,9 @@ import java.time.LocalDateTime;
 public record EntregaChavesDTO(
       @NotNull Long armarioId,
         @NotNull Integer numeroDaChave,
-        @NotBlank String gmIDMatricula,
+//        @NotBlank String gmIDMatricula,
+        @NotNull
+        Long usuarioConsumerId,
         @NotNull Long usuarioId
 ) {
 

@@ -48,7 +48,8 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
             u.nome,
             u.setor,
             u.filial,
-            u.ativo
+            u.ativo,
+            u.cpf
         FROM USUARIO_CONSUMER_CHAVES u
         INNER JOIN BIOMETRIA_FACIAL b
             ON u.biometria_facial_id = b.id
@@ -61,4 +62,6 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
     );
     @Query("Select p from UsuarioConsumerChaves p")
     List<UsuarioConsumerChaves> findAllUsuario();
+   @Query("select p from UsuarioConsumerChaves p where p.cpf = :cpf")
+    Optional<UsuarioConsumerChaves> findByUsuarioCpf(String cpf);
 }

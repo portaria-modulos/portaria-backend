@@ -43,7 +43,6 @@ public class EntregaChavesCDService {
                 .orElseThrow(
                         ()->new RuntimeException("Armario não encontrado")
                 );
-
         var chave = armario.getBlocoChaves().stream()
                 .filter(c -> c.getNumero().equals(d.numeroDaChave()))
                 .findFirst()
@@ -56,7 +55,9 @@ public class EntregaChavesCDService {
                             entregaAtiva.get().getNomeColaborador()
             );
         }
-        var usuarioConsumer = usuarioConsumerRepository.buscaUsuario(d.gmIDMatricula());
+//        var usuarioConsumer = usuarioConsumerRepository.buscaUsuario(d.gmIDMatricula());
+        var usuarioConsumer = usuarioConsumerRepository.findById(d.usuarioConsumerId());
+
         if (!usuarioConsumer.isPresent()){
             throw new UsuarioConsumerValidation("Colaborador não cadastrado!",false);
         }
@@ -97,7 +98,9 @@ public class EntregaChavesCDService {
         entrega.setEntregue(false);
         entrega.setBlocoChaves(chave);
         var history = new EntregaChaveHistory();
-        history.setMatriculaColaborador(usuarioConsumer.get().getMatricula());
+        var matircula = usuarioConsumer.get().getMatricula()!=null?usuarioConsumer.get().getMatricula():usuarioConsumer.get().getCpf();
+        history.setMatriculaColaborador(matircula);
+        history.setEmpresa(usuarioConsumer.get().getEmpresa());
         history.setNomeColaborador(usuarioConsumer.get().getNome());
         history.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
         history.setUsuarioIdRetirada(usuarioConsumer.get().getId());
@@ -184,6 +187,8 @@ public class EntregaChavesCDService {
         if (entregaAtiva.isPresent()) {
             chave.setStatus(StatusArmario.LIVRE);
             chave.setDisponivel(true);
+            chave.setUsuarioOcupacao(null);
+            chave.setUsuarioOcupacaoId(null);
             var history = new EntregaChaveHistory();
             history.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
             history.setUsuarioIdRetirada(chave.getUsuarioOcupacaoId());
@@ -287,7 +292,6 @@ public class EntregaChavesCDService {
             s.setMsg("Entregue com sucesso");
             s.setType("Entrega");
           return s;
-
         }
     }
 }

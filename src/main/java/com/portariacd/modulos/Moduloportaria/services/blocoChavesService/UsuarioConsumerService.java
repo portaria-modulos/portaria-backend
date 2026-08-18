@@ -3,7 +3,9 @@ package com.portariacd.modulos.Moduloportaria.services.blocoChavesService;
 import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.DevolucaoInteface;
 import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.EntregaToken;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
-import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.UsuarioConsumerRequestDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.FactoryResponseChaves;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.TerceirizadoResponse;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.UsuarioConsumerRequestDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -33,29 +35,63 @@ public class UsuarioConsumerService {
     private BiometriaRepository biometriaRepository;
     @Autowired
     private EntregaChaveRepository entregaChaveRepository;
-    public Map<String, String> cadastroDeUsuario(UsuarioConsumerRequestDTO usm, MultipartFile file) throws Exception {
-        var usuario = repository.findByUsuario(usm.GmcoreId(),usm.matricula());
-        if(usuario.isPresent()){
+    public Map<String, String> cadastroDeUsuario(FactoryResponseChaves create, MultipartFile file) throws Exception {
+        var s = service.extrairEmbeddingFace(file);
+        String vetor = Arrays.toString(s)
+                .replace(" ", "");
+        var us =  repository.buscarUsuarioPelaBiometria(vetor);
+       if(us!=null){
+           throw new RuntimeException("Facial ja pertence ao Usuario: "+us.getNome());
+       }
+        if(create instanceof UsuarioConsumerRequestDTO usm){
+            var usuario = repository.findByUsuario(usm.getGmId(),usm.getMatricula());
+            if(usuario.isPresent()){
 
-            if(!usuario.get().getAtivo()){
-                throw new RuntimeException("Usuario bloqueado");
+                if(!usuario.get().getAtivo()){
+                    throw new RuntimeException("Usuario bloqueado");
+                }
+
+                throw new RuntimeException("Colaborador ja cadastrado");
             }
 
-            throw new RuntimeException("Colaborador ja cadastrado");
+            var biometria = service.extrairEmbedding(file);
+            System.out.println("chegou aqui "+biometria.length);
+
+            if(biometria!=null) {
+                var usuarioChaves = new UsuarioConsumerChaves(usm);
+                BiometriaFacial biometriaFacial = new BiometriaFacial(usuarioChaves, biometria, OffsetDateTime.now());
+                usuarioChaves.setBiometriaFacial(biometriaFacial);
+                repository.save(usuarioChaves);
+            }
+
+            return Map.of("msg","Usuario criado com sucesso");
         }
+        if(create instanceof TerceirizadoResponse terceirizadoResponse){
+            var usuario = repository.findByUsuarioCpf(terceirizadoResponse.getCpf());
+            if(usuario.isPresent()){
 
-        var biometria = service.extrairEmbedding(file);
-        System.out.println("chegou aqui "+biometria.length);
+                if(!usuario.get().getAtivo()){
+                    throw new RuntimeException("Usuario bloqueado");
+                }
 
-        if(biometria!=null) {
-            var usuarioChaves = new UsuarioConsumerChaves(usm);
-            BiometriaFacial biometriaFacial = new BiometriaFacial(usuarioChaves, biometria, OffsetDateTime.now());
-            usuarioChaves.setBiometriaFacial(biometriaFacial);
-            repository.save(usuarioChaves);
+                throw new RuntimeException("Colaborador ja cadastrado");
+            }
+
+            var biometria = service.extrairEmbedding(file);
+            System.out.println("chegou aqui "+biometria.length);
+
+            if(biometria!=null) {
+                var usuarioChaves = new UsuarioConsumerChaves(terceirizadoResponse);
+                BiometriaFacial biometriaFacial = new BiometriaFacial(usuarioChaves, biometria, OffsetDateTime.now());
+                usuarioChaves.setBiometriaFacial(biometriaFacial);
+                repository.save(usuarioChaves);
+            }
+
+            return Map.of("msg","Usuario criado com sucesso");
         }
-
-     return Map.of("msg","Usuario criado com sucesso");
+        throw new RuntimeException("Erro ao buscar usuario");
     }
+
     public List<UsuarioConsumerResponseDTO> lista() {
        return repository.findAllUsuario().stream().map(UsuarioConsumerResponseDTO::new).toList();
     }

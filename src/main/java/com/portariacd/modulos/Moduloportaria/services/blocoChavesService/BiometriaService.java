@@ -1,6 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.services.blocoChavesService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +24,8 @@ public class BiometriaService {
     public BiometriaService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
-    private final String IA_URL = "http://10.220.112.111:5000/"; // URL do seu container DeepFace
+    @Value("${face}")
+    private  String IA_URL;  // URL do seu container DeepFace
     @Autowired
     private CriptografiaService criptografiaService;
     public float[] extrairEmbedding(MultipartFile foto) {

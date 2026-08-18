@@ -1,15 +1,15 @@
-package com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo;
-
-import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioConsumerChaves;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-public record UsuarioConsumerRequestDTO(@NotBlank String matricula, @NotBlank String GmcoreId, @NotBlank String nome, @NotBlank String setor, @NotNull Integer filial,@NotNull Long usuarioInsert
-){
-    public UsuarioConsumerRequestDTO(UsuarioConsumerChaves e) {
-       this(e.getMatricula(),e.getGmcoreId(),e.getNome(),e.getSetor(),e.getFilial(),e.getUsuarioInsert());
-    }
-}
-
-
-
+//package com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo;
+//
+//import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioConsumerChaves;
+//import jakarta.validation.constraints.NotBlank;
+//import jakarta.validation.constraints.NotNull;
+//
+//public record UsuarioConsumerRequestDTO(@NotBlank String matricula, @NotBlank String GmcoreId, @NotBlank String nome, @NotBlank String setor, @NotNull Integer filial,@NotNull Long usuarioInsert
+//){
+//    public UsuarioConsumerRequestDTO(UsuarioConsumerChaves e) {
+//       this(e.getMatricula(),e.getGmcoreId(),e.getNome(),e.getSetor(),e.getFilial(),e.getUsuarioInsert());
+//    }
+//}
+//
+//
+//

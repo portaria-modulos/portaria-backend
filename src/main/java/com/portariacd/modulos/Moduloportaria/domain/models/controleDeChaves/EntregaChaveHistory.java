@@ -41,6 +41,7 @@ public class EntregaChaveHistory {
     private Long usuarioIdDevolucao;
     private Long filialId;
     private String status;
+    private String empresa;
 
     // --- GETTERS E SETTERS ---
 
