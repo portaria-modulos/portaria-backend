@@ -39,6 +39,8 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET,"/portaria/v1/usuario/*").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/portaria/v1/saida/*").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/download-app/*").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/module/v1/filial/lista").permitAll()
+                                .requestMatchers(HttpMethod.POST"/entregaChaves/devolucao/token").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityConfiguration, UsernamePasswordAuthenticationFilter.class)
