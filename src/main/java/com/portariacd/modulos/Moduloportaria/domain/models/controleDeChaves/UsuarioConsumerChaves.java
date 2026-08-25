@@ -35,6 +35,7 @@ public class UsuarioConsumerChaves {
     private String cpf;
     private String empresa;
     private Boolean tipoColaboradorFuncionario;
+    private String tipoFuncionario;
     @OneToOne(
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL
@@ -52,6 +53,7 @@ public class UsuarioConsumerChaves {
             this.GmcoreId = usm.getGmId();
             this.empresa = usm.getNomeEmpresa();
             this.tipoColaboradorFuncionario = true;
+            this.tipoFuncionario = usm.getTipo();
 
     }
 
@@ -66,5 +68,6 @@ public class UsuarioConsumerChaves {
         this.cpf = usm.getCpf();
         this.empresa = usm.getNomeEmpresa();
         this.tipoColaboradorFuncionario = false;
+        this.tipoFuncionario = usm.getTipo();
     }
 }

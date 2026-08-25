@@ -159,6 +159,11 @@ public class UsuarioConsumerService {
         if (temValor(update.getSetor())) usuario.setSetor(update.getSetor());
         if (update.getFilial() != null) usuario.setFilial(update.getFilial());
         if (temValor(update.getNomeEmpresa())) usuario.setEmpresa(update.getNomeEmpresa());
+        if (temValor(update.getTipoFuncionario())) {
+            String tipoFuncionario = update.getTipoFuncionario().toLowerCase();
+            usuario.setTipoFuncionario(tipoFuncionario);
+            usuario.setTipoColaboradorFuncionario(tipoFuncionario.equals("funcionario"));
+        }
         if (update.getUsuarioInsert() != null) usuario.setUsuarioInsert(update.getUsuarioInsert());
 
         if (file != null && !file.isEmpty()) {

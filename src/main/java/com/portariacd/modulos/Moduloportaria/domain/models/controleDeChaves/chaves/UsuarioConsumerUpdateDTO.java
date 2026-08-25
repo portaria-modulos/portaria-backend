@@ -12,6 +12,7 @@ public class UsuarioConsumerUpdateDTO {
     private String setor;
     private Integer filial;
     private String nomeEmpresa;
+    private String tipoFuncionario;
     private Long usuarioInsert;
 
     public String getMatricula() { return matricula; }
@@ -28,6 +29,8 @@ public class UsuarioConsumerUpdateDTO {
     public void setFilial(Integer filial) { this.filial = filial; }
     public String getNomeEmpresa() { return nomeEmpresa; }
     public void setNomeEmpresa(String nomeEmpresa) { this.nomeEmpresa = nomeEmpresa; }
+    public String getTipoFuncionario() { return tipoFuncionario; }
+    public void setTipoFuncionario(String tipoFuncionario) { this.tipoFuncionario = tipoFuncionario; }
     public Long getUsuarioInsert() { return usuarioInsert; }
     public void setUsuarioInsert(Long usuarioInsert) { this.usuarioInsert = usuarioInsert; }
 }
