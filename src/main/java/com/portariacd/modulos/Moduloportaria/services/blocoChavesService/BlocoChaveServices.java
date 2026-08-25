@@ -41,8 +41,15 @@ public class BlocoChaveServices {
                .filter(armario -> filial == null || filial.longValue() == armario.getFilial())
                .filter(armario -> tipoFiltro == null || armario.getTipo() == tipoFiltro)
                .filter(armario -> armario.getBlocoChaves().stream()
-                       .anyMatch(chave -> statusImpedeUso(chave.getStatus()) || !chave.isAtivo()))
-               .map(ArmarioResponseDTO::new)
+                       .anyMatch(chave -> chave.getStatus() == StatusArmario.EM_MANUTENCAO))
+               .map(armario -> new ArmarioResponseDTO(
+                       armario.getId(),
+                       armario.getFilial(),
+                       armario.getTipo().name(),
+                       armario.getBlocoChaves().stream()
+                               .filter(chave -> chave.getStatus() == StatusArmario.EM_MANUTENCAO)
+                               .map(BlocoChavesResponseDTO::new)
+                               .toList()))
                .toList();
    }
 
@@ -71,14 +78,6 @@ public class BlocoChaveServices {
                && armario.getTipo() != Tipo.convertTipo(tipo)) {
            throw new RuntimeException("O tipo informado não pertence ao armário");
        }
-   }
-
-   private boolean statusImpedeUso(StatusArmario status) {
-       return status == StatusArmario.EM_MANUTENCAO
-               || status == StatusArmario.BLOQUEADO
-               || status == StatusArmario.INATIVO
-               || status == StatusArmario.SEM_ACESSO
-               || status == StatusArmario.SEM_CHAVE;
    }
 
    private StatusArmario converterStatus(String status) {
