@@ -18,8 +18,12 @@ public enum Tipo {
      }
 
      public static Tipo convertTipo(String s){
+         if (s == null || s.isBlank()) {
+             throw new RuntimeException("Tipo de Armario não informado");
+         }
+         String tipoInformado = s.trim();
          for (Tipo v : Tipo.values()){
-             if(v.tipo.equalsIgnoreCase(s)){
+             if(v.tipo.equalsIgnoreCase(tipoInformado) || v.name().equalsIgnoreCase(tipoInformado)){
                 return v;
              }
          }

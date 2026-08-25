@@ -4,7 +4,6 @@ import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.Arma
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.BlocoChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.StatusArmario;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.Tipo;
-import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.StatusArmario;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.ArmarioDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.ArmarioResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.BlocoChavesDTO;
@@ -41,16 +40,20 @@ public class BlocoChaveServices {
                .filter(armario -> filial == null || filial.longValue() == armario.getFilial())
                .filter(armario -> tipoFiltro == null || armario.getTipo() == tipoFiltro)
                .filter(armario -> armario.getBlocoChaves().stream()
-                       .anyMatch(chave -> chave.getStatus() == StatusArmario.EM_MANUTENCAO))
+                       .anyMatch(chave -> isStatusProblema(chave.getStatus())))
                .map(armario -> new ArmarioResponseDTO(
                        armario.getId(),
                        armario.getFilial(),
                        armario.getTipo().name(),
                        armario.getBlocoChaves().stream()
-                               .filter(chave -> chave.getStatus() == StatusArmario.EM_MANUTENCAO)
+                               .filter(chave -> isStatusProblema(chave.getStatus()))
                                .map(BlocoChavesResponseDTO::new)
                                .toList()))
                .toList();
+   }
+
+   private boolean isStatusProblema(StatusArmario status) {
+       return status == StatusArmario.EM_MANUTENCAO || status == StatusArmario.BLOQUEADO;
    }
 
    public BlocoChaves alterarStatusBloco(Long armarioId, Long blocoId, Integer numeroChave,
