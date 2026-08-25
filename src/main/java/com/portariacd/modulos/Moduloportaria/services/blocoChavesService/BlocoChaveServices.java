@@ -47,7 +47,7 @@ public class BlocoChaveServices {
    }
 
    public BlocoChaves alterarStatusBloco(Long armarioId, Long blocoId, Integer numeroChave,
-                                         String tipo, String status) {
+                                         String tipo, String status, String descricaoProblema) {
        var armario = repository.findById(armarioId)
                .orElseThrow(() -> new RuntimeException("Armário não encontrado"));
        validarTipo(armario, tipo);
@@ -62,6 +62,7 @@ public class BlocoChaveServices {
        boolean ativo = novoStatus == StatusArmario.LIVRE || novoStatus == StatusArmario.OCUPADO;
        bloco.setAtivo(ativo);
        bloco.setDisponivel(novoStatus == StatusArmario.LIVRE);
+       bloco.setDescricaoProblema(ativo ? null : descricaoProblema);
        return chavesRepository.save(bloco);
    }
 

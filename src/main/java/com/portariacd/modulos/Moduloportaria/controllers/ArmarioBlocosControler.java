@@ -45,7 +45,7 @@ public class ArmarioBlocosControler {
             @PathVariable Long blocoId,
             @RequestParam("tipo") String tipo,
             @RequestBody @Valid AlterarStatusArmarioDTO dto) {
-        var bloco = service.alterarStatusBloco(armarioId, blocoId, null, tipo, dto.status());
+        var bloco = service.alterarStatusBloco(armarioId, blocoId, null, tipo, dto.status(), dto.descricaoProblema());
         return ResponseEntity.ok(new BlocoChavesResponseDTO(bloco));
     }
 
@@ -55,7 +55,7 @@ public class ArmarioBlocosControler {
             @PathVariable Integer numeroChave,
             @RequestParam("tipo") String tipo,
             @RequestBody @Valid AlterarStatusArmarioDTO dto) {
-        var bloco = service.alterarStatusBloco(armarioId, null, numeroChave, tipo, dto.status());
+        var bloco = service.alterarStatusBloco(armarioId, null, numeroChave, tipo, dto.status(), dto.descricaoProblema());
         return ResponseEntity.ok(new BlocoChavesResponseDTO(bloco));
     }
     @PostMapping("/chaves")

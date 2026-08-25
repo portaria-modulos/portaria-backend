@@ -20,6 +20,8 @@ public class BlocoChaves {
     private boolean disponivel;
     @Enumerated(EnumType.STRING)
     private StatusArmario status;
+    @Column(length = 1000)
+    private String descricaoProblema;
 
     public Long getId() {
         return id;
@@ -69,6 +71,14 @@ public class BlocoChaves {
         this.status = status;
     }
 
+    public String getDescricaoProblema() {
+        return descricaoProblema;
+    }
+
+    public void setDescricaoProblema(String descricaoProblema) {
+        this.descricaoProblema = descricaoProblema;
+    }
+
     public String getUsuarioOcupacao() {
         return UsuarioOcupacao;
     }
@@ -85,5 +95,4 @@ public class BlocoChaves {
         UsuarioOcupacaoId = usuarioOcupacaoId;
     }
 }
-
 
