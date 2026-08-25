@@ -1,6 +1,7 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario;
 
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.BlocoChaves;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.StatusArmario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,6 @@ public interface BlocoChavesRepository extends JpaRepository<BlocoChaves,Long> {
 
      @Query("select p from BlocoChaves p left join p.armario ar where ar.filial = :filial and ar.id = :arm and p.numero = :chave ")
     BlocoChaves findChavaDetalhesFilial(Long filial, Long arm, Integer chave);
-    @Query("select p from BlocoChaves p left join p.armario ar where ar.filial = :filial and ar.id = :arm and p.disponivel = false ")
-    List<BlocoChaves> findChavaOcupadoFilial(Long filial, Long arm);
+    @Query("select p from BlocoChaves p left join p.armario ar where ar.filial = :filial and ar.id = :arm and p.status = :status ")
+    List<BlocoChaves> findChavaOcupadoFilial(Long filial, Long arm, StatusArmario status);
 }

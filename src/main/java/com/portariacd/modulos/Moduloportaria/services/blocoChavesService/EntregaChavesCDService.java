@@ -279,7 +279,7 @@ public class EntregaChavesCDService {
     }
 
     public List<EntregaChavesResponseDetalhesDTO> ocupadoFilial(Long filial, Long arm) {
-       var resposta = chavesRepository.findChavaOcupadoFilial(filial,arm);
+       var resposta = chavesRepository.findChavaOcupadoFilial(filial, arm, StatusArmario.OCUPADO);
         if (resposta == null) {
             return null ;
         }
