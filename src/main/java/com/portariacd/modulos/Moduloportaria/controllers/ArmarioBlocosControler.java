@@ -39,22 +39,23 @@ public class ArmarioBlocosControler {
         return ResponseEntity.ok(service.listarArmariosComProblema(filial, tipo));
     }
 
-    @PatchMapping("/{armarioId}/status")
-    @PutMapping("/{armarioId}/status")
-    public ResponseEntity<Map<String, String>> alterarStatus(
-            @PathVariable Long armarioId,
-            @RequestBody @Valid AlterarStatusArmarioDTO dto) {
-        var status = service.alterarStatusArmario(armarioId, dto.status());
-        return ResponseEntity.ok(Map.of("armarioId", String.valueOf(armarioId),
-                "statusBlocos", status.name()));
-    }
-
-    @PutMapping("/{armarioId}/chave/{numeroChave}/status")
+    @PatchMapping("/{armarioId}/bloco/{blocoId}/status")
     public ResponseEntity<BlocoChavesResponseDTO> alterarStatusBloco(
             @PathVariable Long armarioId,
-            @PathVariable Integer numeroChave,
+            @PathVariable Long blocoId,
+            @RequestParam("tipo") String tipo,
             @RequestBody @Valid AlterarStatusArmarioDTO dto) {
-        var bloco = service.alterarStatusBloco(armarioId, numeroChave, dto.status());
+        var bloco = service.alterarStatusBloco(armarioId, blocoId, null, tipo, dto.status());
+        return ResponseEntity.ok(new BlocoChavesResponseDTO(bloco));
+    }
+
+    @PatchMapping("/{armarioId}/chave/{numeroChave}/status")
+    public ResponseEntity<BlocoChavesResponseDTO> alterarStatusChave(
+            @PathVariable Long armarioId,
+            @PathVariable Integer numeroChave,
+            @RequestParam("tipo") String tipo,
+            @RequestBody @Valid AlterarStatusArmarioDTO dto) {
+        var bloco = service.alterarStatusBloco(armarioId, null, numeroChave, tipo, dto.status());
         return ResponseEntity.ok(new BlocoChavesResponseDTO(bloco));
     }
     @PostMapping("/chaves")

@@ -59,9 +59,9 @@ public class EntregaChavesCDService {
                 .filter(c -> c.getNumero().equals(d.numeroDaChave()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Chave não encontrada"));
-        if (statusImpedeEntrega(chave.getStatus())) {
+        if (!chave.isAtivo() || statusImpedeEntrega(chave.getStatus())) {
             throw new RuntimeException("Não é possível entregar a chave: bloco está "
-                    + chave.getStatus().name());
+                    + (chave.isAtivo() ? chave.getStatus().name() : "INATIVO"));
         }
         var entregaAtiva = repository.findEntregaAtiva(chave.getId());
 

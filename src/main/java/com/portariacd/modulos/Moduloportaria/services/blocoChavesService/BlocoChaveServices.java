@@ -35,40 +35,41 @@ public class BlocoChaveServices {
       repository.save(new Armario(dto));
    }
 
-   public StatusArmario alterarStatusArmario(Long armarioId, String status) {
-       var armario = repository.findById(armarioId)
-               .orElseThrow(() -> new RuntimeException("Armário não encontrado"));
-       StatusArmario novoStatus = converterStatus(status);
-       armario.getBlocoChaves().forEach(bloco -> {
-           bloco.setStatus(novoStatus);
-           bloco.setDisponivel(novoStatus == StatusArmario.LIVRE);
-       });
-       repository.save(armario);
-       return novoStatus;
-   }
-
    public List<ArmarioResponseDTO> listarArmariosComProblema(Integer filial, String tipo) {
        Tipo tipoFiltro = tipo == null || tipo.isBlank() ? null : Tipo.convertTipo(tipo);
        return repository.findAll().stream()
                .filter(armario -> filial == null || filial.longValue() == armario.getFilial())
                .filter(armario -> tipoFiltro == null || armario.getTipo() == tipoFiltro)
                .filter(armario -> armario.getBlocoChaves().stream()
-                       .anyMatch(chave -> statusImpedeUso(chave.getStatus())))
+                       .anyMatch(chave -> statusImpedeUso(chave.getStatus()) || !chave.isAtivo()))
                .map(ArmarioResponseDTO::new)
                .toList();
    }
 
-   public BlocoChaves alterarStatusBloco(Long armarioId, Integer numeroChave, String status) {
+   public BlocoChaves alterarStatusBloco(Long armarioId, Long blocoId, Integer numeroChave,
+                                         String tipo, String status) {
        var armario = repository.findById(armarioId)
                .orElseThrow(() -> new RuntimeException("Armário não encontrado"));
+       validarTipo(armario, tipo);
        var bloco = armario.getBlocoChaves().stream()
-               .filter(chave -> chave.getNumero().equals(numeroChave))
+               .filter(chave -> blocoId != null
+                       ? chave.getId().equals(blocoId)
+                       : chave.getNumero().equals(numeroChave))
                .findFirst()
                .orElseThrow(() -> new RuntimeException("Chave não encontrada no armário"));
        StatusArmario novoStatus = converterStatus(status);
        bloco.setStatus(novoStatus);
+       boolean ativo = novoStatus == StatusArmario.LIVRE || novoStatus == StatusArmario.OCUPADO;
+       bloco.setAtivo(ativo);
        bloco.setDisponivel(novoStatus == StatusArmario.LIVRE);
        return chavesRepository.save(bloco);
+   }
+
+   private void validarTipo(Armario armario, String tipo) {
+       if (tipo != null && !tipo.isBlank()
+               && armario.getTipo() != Tipo.convertTipo(tipo)) {
+           throw new RuntimeException("O tipo informado não pertence ao armário");
+       }
    }
 
    private boolean statusImpedeUso(StatusArmario status) {
