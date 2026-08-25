@@ -62,6 +62,12 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
     );
     @Query("Select p from UsuarioConsumerChaves p")
     List<UsuarioConsumerChaves> findAllUsuario();
+    @Query("select p from UsuarioConsumerChaves p where p.filial = :filial")
+    List<UsuarioConsumerChaves> findAllByFilial(@Param("filial") Integer filial);
    @Query("select p from UsuarioConsumerChaves p where p.cpf = :cpf")
     Optional<UsuarioConsumerChaves> findByUsuarioCpf(String cpf);
+    Optional<UsuarioConsumerChaves> findByMatricula(String matricula);
+    @Query("select p from UsuarioConsumerChaves p where p.GmcoreId = :gmcoreId")
+    Optional<UsuarioConsumerChaves> findByGmcoreId(@Param("gmcoreId") String gmcoreId);
+    Optional<UsuarioConsumerChaves> findByCpf(String cpf);
 }

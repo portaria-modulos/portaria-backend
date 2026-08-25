@@ -6,7 +6,9 @@ import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.FactoryResponseChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.TerceirizadoResponse;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.UsuarioConsumerRequestDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.UsuarioConsumerUpdateDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
+import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.FilialRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 public class UsuarioConsumerService {
     @Autowired
     private UsuarioConsumerRepository repository;
+    @Autowired
+    private FilialRepository filialRepository;
     @PersistenceContext
     private EntityManager entityManager;
     @Autowired
@@ -36,6 +40,7 @@ public class UsuarioConsumerService {
     @Autowired
     private EntregaChaveRepository entregaChaveRepository;
     public Map<String, String> cadastroDeUsuario(FactoryResponseChaves create, MultipartFile file) throws Exception {
+        validarFilial(create.getFilial());
         var s = service.extrairEmbeddingFace(file);
         String vetor = Arrays.toString(s)
                 .replace(" ", "");
@@ -92,8 +97,100 @@ public class UsuarioConsumerService {
         throw new RuntimeException("Erro ao buscar usuario");
     }
 
-    public List<UsuarioConsumerResponseDTO> lista() {
-       return repository.findAllUsuario().stream().map(UsuarioConsumerResponseDTO::new).toList();
+    public List<UsuarioConsumerResponseDTO> lista(Integer filial) {
+       return repository.findAllByFilial(filial).stream().map(UsuarioConsumerResponseDTO::new).toList();
+    }
+
+    @Transactional
+    public void cadastroDeUsuarioSemBiometria(FactoryResponseChaves create) {
+        validarFilial(create.getFilial());
+        if (create instanceof UsuarioConsumerRequestDTO usm) {
+            var usuario = repository.findByUsuario(usm.getGmId(), usm.getMatricula());
+            if (usuario.isPresent()) {
+                if (!usuario.get().getAtivo()) throw new RuntimeException("Usuario bloqueado");
+                throw new RuntimeException("Colaborador ja cadastrado");
+            }
+            repository.save(new UsuarioConsumerChaves(usm));
+            return;
+        }
+        if (create instanceof TerceirizadoResponse terceirizado) {
+            var usuario = repository.findByUsuarioCpf(terceirizado.getCpf());
+            if (usuario.isPresent()) {
+                if (!usuario.get().getAtivo()) throw new RuntimeException("Usuario bloqueado");
+                throw new RuntimeException("Colaborador ja cadastrado");
+            }
+            repository.save(new UsuarioConsumerChaves(terceirizado));
+            return;
+        }
+        throw new IllegalArgumentException("Tipo de usuário inválido");
+    }
+
+    private void validarFilial(Integer numeroFilial) {
+        var filial = filialRepository.findByNumeroFilial(numeroFilial)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Filial não cadastrada: " + numeroFilial));
+
+        if (!Boolean.TRUE.equals(filial.getAtivo())) {
+            throw new IllegalArgumentException("Filial inativa: " + numeroFilial);
+        }
+    }
+
+    @Transactional
+    public Map<String, String> atualizaUsuario(Long usuarioId, UsuarioConsumerUpdateDTO update,
+                                                MultipartFile file) {
+        var usuario = repository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        if (temValor(update.getMatricula())) {
+            validarIdentificador(repository.findByMatricula(update.getMatricula()), usuario,
+                    "matrícula");
+            usuario.setMatricula(update.getMatricula());
+        }
+        if (temValor(update.getGmId())) {
+            validarIdentificador(repository.findByGmcoreId(update.getGmId()), usuario,
+                    "GM ID");
+            usuario.setGmcoreId(update.getGmId());
+        }
+        if (temValor(update.getCpf())) {
+            validarIdentificador(repository.findByCpf(update.getCpf()), usuario, "CPF");
+            usuario.setCpf(update.getCpf());
+        }
+        if (temValor(update.getNome())) usuario.setNome(update.getNome());
+        if (temValor(update.getSetor())) usuario.setSetor(update.getSetor());
+        if (update.getFilial() != null) usuario.setFilial(update.getFilial());
+        if (temValor(update.getNomeEmpresa())) usuario.setEmpresa(update.getNomeEmpresa());
+        if (update.getUsuarioInsert() != null) usuario.setUsuarioInsert(update.getUsuarioInsert());
+
+        if (file != null && !file.isEmpty()) {
+            var embedding = service.extrairEmbeddingFace(file);
+            String vetor = Arrays.toString(embedding).replace(" ", "");
+            var usuarioComMesmaFace = repository.buscarUsuarioPelaBiometria(vetor);
+            if (usuarioComMesmaFace != null && usuarioComMesmaFace.getId() != usuarioId) {
+                throw new RuntimeException("Facial já pertence ao usuário: "
+                        + usuarioComMesmaFace.getNome());
+            }
+
+            if (usuario.getBiometriaFacial() == null) {
+                usuario.setBiometriaFacial(new BiometriaFacial(usuario, embedding, OffsetDateTime.now()));
+            } else {
+                usuario.getBiometriaFacial().setEmbedding(embedding);
+                usuario.getBiometriaFacial().setDataCadastro(OffsetDateTime.now());
+            }
+        }
+
+        repository.save(usuario);
+        return Map.of("msg", "Usuário atualizado com sucesso");
+    }
+
+    private boolean temValor(String valor) {
+        return valor != null && !valor.isBlank();
+    }
+
+    private void validarIdentificador(java.util.Optional<UsuarioConsumerChaves> encontrado,
+                                      UsuarioConsumerChaves atual, String campo) {
+        if (encontrado.isPresent() && encontrado.get().getId() != atual.getId()) {
+            throw new RuntimeException("Já existe um usuário com a " + campo + " informada");
+        }
     }
     public UsuarioProjection extrairEmbedding(MultipartFile file) {
         var biometria = service.extrairEmbeddingFace(file);

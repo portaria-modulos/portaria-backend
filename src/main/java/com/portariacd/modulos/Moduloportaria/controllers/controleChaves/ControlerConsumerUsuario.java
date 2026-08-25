@@ -3,9 +3,12 @@ package com.portariacd.modulos.Moduloportaria.controllers.controleChaves;
 import com.portariacd.modulos.Moduloportaria.controllers.BlocoControler.BiometriaImagem;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioConsumerResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.UsuarioProjection;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.ImportacaoUsuarioResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.FactoryResponseChaves;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.UsuarioConsumerUpdateDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.config.ConverteJson;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.UsuarioConsumerService;
+import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.UsuarioConsumerImportService;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.UsuarioId;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
@@ -32,6 +35,8 @@ public class ControlerConsumerUsuario {
     private Validator validator;
     @Autowired
     private UsuarioConsumerService service;
+    @Autowired
+    private UsuarioConsumerImportService importService;
     @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
     @PostMapping
     public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestPart("res") @Valid String res, @RequestParam(value = "file",required = true)MultipartFile file) throws Exception {
@@ -49,9 +54,28 @@ public class ControlerConsumerUsuario {
         var resposta = service.cadastroDeUsuario(conv, file);
         return ResponseEntity.ok(resposta);
     }
+
+    @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
+    @PostMapping(value = "/importar", consumes = "multipart/form-data")
+    public ResponseEntity<ImportacaoUsuarioResponseDTO> importarUsuarios(
+            @RequestParam("planilha") MultipartFile planilha) throws Exception {
+        return ResponseEntity.ok(importService.importar(planilha));
+    }
+
+    @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
+    @PutMapping
+    public ResponseEntity<Map<String, String>> atualizaUsuario(
+            @RequestParam("usuarioId") Long usuarioId,
+            @RequestPart("res") String res,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        var update = converteJson.conversor(res, UsuarioConsumerUpdateDTO.class);
+        var resposta = service.atualizaUsuario(usuarioId, update, file);
+        return ResponseEntity.ok(resposta);
+    }
     @GetMapping
-    public ResponseEntity<List<UsuarioConsumerResponseDTO>> lista(){
-        var resposta =service.lista();
+    public ResponseEntity<List<UsuarioConsumerResponseDTO>> lista(
+            @RequestParam("filial") Integer filial){
+        var resposta = service.lista(filial);
         return ResponseEntity.ok(resposta);
     }
 

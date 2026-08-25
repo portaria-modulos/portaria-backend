@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface FilialRepository extends JpaRepository<Filial,Long> {
     @Query("select p from Filial p where p.numeroFilial=:numero or p.nome=:nome")
     Optional<Filial> findByNumeroFilial(Integer numero,String nome);
+    Optional<Filial> findByNumeroFilial(Integer numeroFilial);
 }

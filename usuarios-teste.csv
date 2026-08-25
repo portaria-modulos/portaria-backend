@@ -1,0 +1,4 @@
+tipo;nome;setor;filial;nomeEmpresa;usuarioInsert;matricula;gmId;cpf
+funcionario;Joao da Silva;Logistica;1;Empresa Teste;1;TESTE001;GMTESTE001;
+funcionario;Maria Oliveira;Operacao;1;Empresa Teste;1;TESTE002;GMTESTE002;
+terceirizado;Carlos Souza;Seguranca;1;Prestadora Teste;1;;;99999999999
