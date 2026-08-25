@@ -49,6 +49,7 @@ public interface UsuarioConsumerRepository extends JpaRepository<UsuarioConsumer
             u.setor,
             u.filial,
             u.ativo,
+            u.empresa,
             u.cpf
         FROM USUARIO_CONSUMER_CHAVES u
         INNER JOIN BIOMETRIA_FACIAL b

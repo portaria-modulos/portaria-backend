@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 public record EntregaChavesResponseDTO(
  String nomeColaborador,
  String matriculaColaborador,
+ String empresaColaborador,
  OffsetDateTime dataHoraRetirada,
  LocalDateTime dataHoraDevolucao,
  String usuarioPortariaRetirada,
@@ -23,6 +24,7 @@ public record EntregaChavesResponseDTO(
     public EntregaChavesResponseDTO(EntregaChave e) {
         this(e.getNomeColaborador(),
                 e.getMatriculaColaborador()!=null?e.getMatriculaColaborador():null
+                ,e.getEmpresaColaborador()
                 ,e.getDataHoraRetirada(),
                 e.getDataHoraDevolucao(),
                 e.getUsuarioPortariaRetirada(),

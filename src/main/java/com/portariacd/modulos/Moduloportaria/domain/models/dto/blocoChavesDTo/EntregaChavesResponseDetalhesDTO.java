@@ -11,6 +11,7 @@ import java.util.Optional;
 public record EntregaChavesResponseDetalhesDTO(
  String nomeColaborador,
  String matriculaColaborador,
+ String empresaColaborador,
  String setor,
  OffsetDateTime dataHoraRetirada,
  LocalDateTime dataHoraDevolucao,
@@ -21,6 +22,7 @@ public record EntregaChavesResponseDetalhesDTO(
     public EntregaChavesResponseDetalhesDTO(EntregaChave e) {
         this(e.getNomeColaborador(),
                 e.getMatriculaColaborador()!=null?e.getMatriculaColaborador():null,
+                e.getEmpresaColaborador(),
                 null
                 ,e.getDataHoraRetirada(),
                 e.getDataHoraDevolucao(),
@@ -35,6 +37,7 @@ public record EntregaChavesResponseDetalhesDTO(
         this(
                 usuariosConsumer != null ? usuariosConsumer.getNome() : null,
                 usuariosConsumer != null ? usuariosConsumer.getMatricula() : null,
+                usuariosConsumer != null ? usuariosConsumer.getEmpresa() : null,
                 usuariosConsumer != null ? usuariosConsumer.getSetor() : null,
                 null,
                 null,
