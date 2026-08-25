@@ -15,5 +15,3 @@ public record ArmarioResponseDTO(Long id, Long filial, String tipo, List<BlocoCh
 
 
 }
-
-

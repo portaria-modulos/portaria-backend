@@ -4,6 +4,7 @@ import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.Arma
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.BlocoChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.StatusArmario;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.Tipo;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.StatusArmario;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.ArmarioDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.ArmarioResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.BlocoChavesDTO;
@@ -32,6 +33,58 @@ public class BlocoChaveServices {
         throw new RuntimeException("Ja contém armario criado");
     }
       repository.save(new Armario(dto));
+   }
+
+   public StatusArmario alterarStatusArmario(Long armarioId, String status) {
+       var armario = repository.findById(armarioId)
+               .orElseThrow(() -> new RuntimeException("Armário não encontrado"));
+       StatusArmario novoStatus = converterStatus(status);
+       armario.getBlocoChaves().forEach(bloco -> {
+           bloco.setStatus(novoStatus);
+           bloco.setDisponivel(novoStatus == StatusArmario.LIVRE);
+       });
+       repository.save(armario);
+       return novoStatus;
+   }
+
+   public List<ArmarioResponseDTO> listarArmariosComProblema(Integer filial, String tipo) {
+       Tipo tipoFiltro = tipo == null || tipo.isBlank() ? null : Tipo.convertTipo(tipo);
+       return repository.findAll().stream()
+               .filter(armario -> filial == null || filial.longValue() == armario.getFilial())
+               .filter(armario -> tipoFiltro == null || armario.getTipo() == tipoFiltro)
+               .filter(armario -> armario.getBlocoChaves().stream()
+                       .anyMatch(chave -> statusImpedeUso(chave.getStatus())))
+               .map(ArmarioResponseDTO::new)
+               .toList();
+   }
+
+   public BlocoChaves alterarStatusBloco(Long armarioId, Integer numeroChave, String status) {
+       var armario = repository.findById(armarioId)
+               .orElseThrow(() -> new RuntimeException("Armário não encontrado"));
+       var bloco = armario.getBlocoChaves().stream()
+               .filter(chave -> chave.getNumero().equals(numeroChave))
+               .findFirst()
+               .orElseThrow(() -> new RuntimeException("Chave não encontrada no armário"));
+       StatusArmario novoStatus = converterStatus(status);
+       bloco.setStatus(novoStatus);
+       bloco.setDisponivel(novoStatus == StatusArmario.LIVRE);
+       return chavesRepository.save(bloco);
+   }
+
+   private boolean statusImpedeUso(StatusArmario status) {
+       return status == StatusArmario.EM_MANUTENCAO
+               || status == StatusArmario.BLOQUEADO
+               || status == StatusArmario.INATIVO
+               || status == StatusArmario.SEM_ACESSO
+               || status == StatusArmario.SEM_CHAVE;
+   }
+
+   private StatusArmario converterStatus(String status) {
+       try {
+           return StatusArmario.valueOf(status.trim().toUpperCase());
+       } catch (IllegalArgumentException e) {
+           return StatusArmario.converteTipoArmario(status.trim());
+       }
    }
     public List<ArmarioResponseDTO> visualizarArmarios() {
         return repository.findAll()

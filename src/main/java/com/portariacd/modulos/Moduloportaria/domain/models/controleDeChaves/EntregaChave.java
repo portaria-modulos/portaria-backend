@@ -20,6 +20,7 @@ public class EntregaChave {
     // Se você tiver uma entidade Funcionario, mude para @ManyToOne
     private String nomeColaborador;
     private String matriculaColaborador;
+    private String empresaColaborador;
 
     // Registro do momento da entrega
     @Column(nullable = false)
@@ -67,6 +68,14 @@ public class EntregaChave {
 
     public void setMatriculaColaborador(String matriculaColaborador) {
         this.matriculaColaborador = matriculaColaborador;
+    }
+
+    public String getEmpresaColaborador() {
+        return empresaColaborador;
+    }
+
+    public void setEmpresaColaborador(String empresaColaborador) {
+        this.empresaColaborador = empresaColaborador;
     }
 
     public OffsetDateTime getDataHoraRetirada() {

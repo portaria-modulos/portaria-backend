@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("entregaChaves")
@@ -64,6 +65,19 @@ public class EntregaDeChaves {
 
         var lista = service.ocupadoFilial(filial, arm);
         return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("relatorio")
+    public ResponseEntity<?> relatorio(
+            @RequestParam(required = false) LocalDate dataInicio,
+            @RequestParam(required = false) LocalDate dataFim,
+            @RequestParam(required = false) Long filial,
+            @RequestParam(required = false) String colaborador,
+            @RequestParam(required = false) String modeloArmario,
+            @RequestParam(required = false, defaultValue = "TODOS") String status,
+            @RequestParam(required = false, defaultValue = "MES") String agrupamento) {
+        return ResponseEntity.ok(service.relatorio(dataInicio, dataFim, filial, colaborador,
+                modeloArmario, status, agrupamento));
     }
 
 

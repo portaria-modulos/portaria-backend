@@ -12,5 +12,3 @@ public record ArmarioResponseDTO(Long id,@NotNull  Long filial, @NotBlank String
         this(e.getId(),e.getFilial(),e.getTipo().name(),e.getBlocoChaves().stream().map(BlocoChavesResponseDTO::new).toList());
     }
 }
-
-

@@ -30,5 +30,3 @@ public class Armario {
         this.tipo = Tipo.convertTipo(dto.tipo());
     }
 }
-
-

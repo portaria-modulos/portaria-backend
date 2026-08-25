@@ -7,6 +7,10 @@ import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.Ch
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.DesvolucaoChaveDto;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.EntregaChavesResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.EntregaChavesResponseDetalhesDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.controleChaves.EntregaChaveRelatorioDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.controleChaves.PeriodoRelatorio;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.controleChaves.RelatorioEntregaChaveDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.dto.controleChaves.ResumoEntregaChaveDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.ArmarioRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.BlocoChavesRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
@@ -20,8 +24,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class EntregaChavesCDService {
@@ -47,6 +59,10 @@ public class EntregaChavesCDService {
                 .filter(c -> c.getNumero().equals(d.numeroDaChave()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Chave não encontrada"));
+        if (statusImpedeEntrega(chave.getStatus())) {
+            throw new RuntimeException("Não é possível entregar a chave: bloco está "
+                    + chave.getStatus().name());
+        }
         var entregaAtiva = repository.findEntregaAtiva(chave.getId());
 
         if (entregaAtiva.isPresent()) {
@@ -91,6 +107,7 @@ public class EntregaChavesCDService {
         var entrega = new EntregaChave();
         entrega.setMatriculaColaborador(usuarioConsumer.get().getMatricula());
         entrega.setNomeColaborador(usuarioConsumer.get().getNome());
+        entrega.setEmpresaColaborador(usuarioConsumer.get().getEmpresa());
         entrega.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
         entrega.setUsuarioIdRetirada(usuarioConsumer.get().getId());
         entrega.setDataHoraRetirada(OffsetDateTime.now());
@@ -116,6 +133,14 @@ public class EntregaChavesCDService {
         s.setType("Emtrega");
         return s;
 
+    }
+
+    private static boolean statusImpedeEntrega(StatusArmario status) {
+        return status == StatusArmario.EM_MANUTENCAO
+                || status == StatusArmario.BLOQUEADO
+                || status == StatusArmario.INATIVO
+                || status == StatusArmario.SEM_ACESSO
+                || status == StatusArmario.SEM_CHAVE;
     }
 
 
@@ -268,6 +293,88 @@ public class EntregaChavesCDService {
             }
          return  new EntregaChavesResponseDetalhesDTO(e,usuario);
         }).toList();
+    }
+
+    public RelatorioEntregaChaveDTO relatorio(LocalDate dataInicio, LocalDate dataFim,
+                                              Long filial, String colaborador,
+                                              String modeloArmario, String status,
+                                              String agrupamento) {
+        if (dataInicio != null && dataFim != null && dataInicio.isAfter(dataFim)) {
+            throw new IllegalArgumentException("dataInicio não pode ser maior que dataFim");
+        }
+
+        OffsetDateTime inicio = dataInicio == null ? null : dataInicio.atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
+        OffsetDateTime fim = dataFim == null ? null : dataFim.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toOffsetDateTime();
+        String busca = colaborador == null ? null : colaborador.trim().toLowerCase();
+        String modelo = modeloArmario == null ? null : modeloArmario.trim().toLowerCase();
+        String filtroStatus = status == null ? null : status.trim().toUpperCase();
+
+        Predicate<EntregaChave> filtro = entrega -> {
+            boolean noPeriodo = (inicio == null || !entrega.getDataHoraRetirada().isBefore(inicio))
+                    && (fim == null || entrega.getDataHoraRetirada().isBefore(fim));
+            boolean naFilial = filial == null || filial.equals(entrega.getFilialId());
+            boolean colaboradorEncontrado = busca == null || busca.isBlank()
+                    || contem(entrega.getNomeColaborador(), busca)
+                    || contem(entrega.getMatriculaColaborador(), busca);
+            boolean modeloEncontrado = modelo == null || modelo.isBlank()
+                    || modeloArmarioIgual(entrega.getBlocoChaves().getArmario().getTipo().name(), modelo);
+            boolean statusEncontrado = filtroStatus == null || filtroStatus.isBlank()
+                    || "TODOS".equals(filtroStatus)
+                    || ("DEVOLVIDA".equals(filtroStatus) && Boolean.TRUE.equals(entrega.getEntregue()))
+                    || (Set.of("EM_ABERTO", "ATIVA", "ATIVO", "EM_ATIVIDADE").contains(filtroStatus)
+                    && !Boolean.TRUE.equals(entrega.getEntregue()));
+            return noPeriodo && naFilial && colaboradorEncontrado && modeloEncontrado && statusEncontrado;
+        };
+
+        List<EntregaChaveRelatorioDTO> entregas = repository.findAll().stream()
+                .filter(filtro)
+                .sorted(Comparator.comparing(EntregaChave::getDataHoraRetirada).reversed())
+                .map(this::toRelatorioDTO)
+                .toList();
+
+        PeriodoRelatorio periodo = PeriodoRelatorio.from(agrupamento);
+        Map<String, List<EntregaChaveRelatorioDTO>> porPeriodo = entregas.stream()
+                .collect(Collectors.groupingBy(e -> periodo(e.dataHoraRetirada(), periodo)));
+        List<ResumoEntregaChaveDTO> resumo = porPeriodo.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(item -> new ResumoEntregaChaveDTO(item.getKey(), item.getValue().size(),
+                        item.getValue().stream().filter(e -> "DEVOLVIDA".equals(e.status())).count(),
+                        item.getValue().stream().filter(e -> "EM_ABERTO".equals(e.status())).count()))
+                .toList();
+
+        return new RelatorioEntregaChaveDTO(resumo, entregas);
+    }
+
+    private static boolean contem(String valor, String busca) {
+        return valor != null && valor.toLowerCase().contains(busca);
+    }
+
+    private EntregaChaveRelatorioDTO toRelatorioDTO(EntregaChave entrega) {
+        var bloco = entrega.getBlocoChaves();
+        var armario = bloco.getArmario();
+        var retirada = entrega.getDataHoraRetirada().toInstant();
+        var devolucao = entrega.getDataHoraDevolucao() == null
+                ? OffsetDateTime.now().toInstant()
+                : entrega.getDataHoraDevolucao().atZone(ZoneId.systemDefault()).toInstant();
+        long sla = ChronoUnit.MINUTES.between(retirada, devolucao);
+        return new EntregaChaveRelatorioDTO(entrega.getId(), entrega.getFilialId(), armario.getId(),
+                armario.getTipo().name(), bloco.getNumero(), entrega.getNomeColaborador(),
+                entrega.getMatriculaColaborador(), entrega.getEmpresaColaborador(), entrega.getDataHoraRetirada(),
+                entrega.getDataHoraDevolucao(), entrega.getUsuarioPortariaRetirada(),
+                entrega.getUsuarioPortariaDevolucao(), Boolean.TRUE.equals(entrega.getEntregue()) ? "DEVOLVIDA" : "EM_ABERTO", sla);
+    }
+
+    private static String periodo(OffsetDateTime data, PeriodoRelatorio periodo) {
+        return switch (periodo) {
+            case DIA -> data.toLocalDate().toString();
+            case MES -> data.getYear() + "-" + String.format("%02d", data.getMonthValue());
+            case ANO -> String.valueOf(data.getYear());
+        };
+    }
+
+    private static boolean modeloArmarioIgual(String tipo, String filtro) {
+        String normalizado = tipo.toLowerCase();
+        return normalizado.equals(filtro) || normalizado.endsWith("_" + filtro);
     }
 
     public DevolucaoInteface devolverChavePorToken(@Valid EntregaChavesDTO dto) {
