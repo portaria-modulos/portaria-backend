@@ -73,7 +73,7 @@ public class DataInitializer implements CommandLineRunner {
                 "GERENCIAR_USUARIOS", "REGISTRAR_ENTRADA", "REGISTRAR_SAIDA","DELETAR_ENTRADA","EDITAR_ENTRADA",
                 "GERAR_RELATORIO", "VISUALIZAR_VISITANTES", "ALTERAR_CONFIGURACOES","GERENCIAR_REGISTROS","DELETAR_USUARIO",
                 "EDITAR_USUARIO","DELETE_GLOBAL","REGISTRO_CRIADO","LISTA_GERAL","CADASTRO_USUARIO","ADICIONAR_ACESSO",
-                "DELETE_LOGISTICO"
+                "DELETE_LOGISTICO", "VISUALIZAR_LOGS_CHAVES"
         );
         Set<String> existentes = new HashSet<>(permissionRepository.findAll()
                 .stream()
@@ -120,6 +120,7 @@ public class DataInitializer implements CommandLineRunner {
                     permissoesMap.get("REGISTRO_CRIADO"),
                     permissoesMap.get("CADASTRO_USUARIO"),
                     permissoesMap.get("ADICIONAR_ACESSO"),
+                    permissoesMap.get("VISUALIZAR_LOGS_CHAVES"),
                     permissoesMap.get("LISTA_GERAL"),
                     permissoesMap.get("DELETE_LOGISTICO")
             )));            perfilRepository.save(admin);

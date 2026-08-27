@@ -13,6 +13,8 @@ public interface BlocoChavesRepository extends JpaRepository<BlocoChaves,Long> {
     @Query("SELECT COALESCE(MAX(b.numero), 0) FROM BlocoChaves b where b.armario.id =:armarioId")
     Integer buscarUltimoNumero(Long armarioId);
 
+    long countByArmarioId(Long armarioId);
+
      @Query("select p from BlocoChaves p left join p.armario ar where ar.filial = :filial and ar.id = :arm and p.numero = :chave ")
     BlocoChaves findChavaDetalhesFilial(Long filial, Long arm, Integer chave);
     @Query("select p from BlocoChaves p left join p.armario ar where ar.filial = :filial and ar.id = :arm and p.status = :status ")

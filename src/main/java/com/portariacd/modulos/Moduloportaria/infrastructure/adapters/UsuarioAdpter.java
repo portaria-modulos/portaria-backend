@@ -1,8 +1,11 @@
 package com.portariacd.modulos.Moduloportaria.infrastructure.adapters;
 
 import com.portariacd.modulos.Moduloportaria.services.LogAcaoService;
+import com.portariacd.modulos.Moduloportaria.services.AuditoriaChavesService;
 import com.portariacd.modulos.Moduloportaria.domain.gateways.UsuarioGatewayRepository;
 import com.portariacd.modulos.Moduloportaria.domain.models.auth.AlteraSenhaDTO;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.AcaoAuditoriaChaves;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.ModuloAuditoriaChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.usuarioVO.*;
 import com.portariacd.modulos.Moduloportaria.infrastructure.config.TokenConfigure;
 import com.portariacd.modulos.Moduloportaria.domain.models.auth.Usuario;
@@ -40,6 +43,7 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
     @Value("${endpoint}")
     private String endpointUrl;
     private final LogAcaoService service;
+    private final AuditoriaChavesService auditoriaChavesService;
 
     public UsuarioAdpter(UsuarioRepository repository,
                          PerfilRepository perfilRepository
@@ -47,7 +51,8 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
                          TokenConfigure tokenConfigure,
                          Validator validator,
                          ValidaNovaPassword validaNovaPassword,
-                         LogAcaoService service
+                         LogAcaoService service,
+                         AuditoriaChavesService auditoriaChavesService
     ){
         this.repository = repository;
         this.tokenConfigure = tokenConfigure;
@@ -56,6 +61,7 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
         this.validator = validator;
         this.validaNovaPassword = validaNovaPassword;
         this.service = service;
+        this.auditoriaChavesService = auditoriaChavesService;
     }
 
     public void registroUsuario(CadastroUsuarioDto dto){
@@ -78,12 +84,24 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
         }
 
        var usuarioSalvo =  repository.save(usuarioEntity);
-     var usuarioCadastro =  repository.findById(dto.usuarioLogado()).orElseThrow(
-             RuntimeException::new
-        );
      String msg = "Usuário cadastrado com sucesso (ID: %d) (NOME: %s) ".formatted(usuarioSalvo.getId(), usuarioSalvo.getNome());
 
-        salvaLog(new UsuarioRequestDTO(usuarioCadastro),"CRIAR_USUARIO",msg);
+        salvaLog(new UsuarioRequestDTO(usuarioSalvo),"CRIAR_USUARIO",msg);
+        auditoriaChavesService.registrar(
+                AcaoAuditoriaChaves.CRIAR,
+                ModuloAuditoriaChaves.USUARIO,
+                "UsuarioEntity",
+                usuarioSalvo.getId(),
+                "Usuário do sistema %s criado.".formatted(usuarioSalvo.getNome()),
+                (long) usuarioSalvo.getFilial(),
+                null,
+                null,
+                null,
+                null,
+                auditoriaChavesService.snapshotUsuarioSistema(usuarioSalvo),
+                null,
+                null
+        );
 
     }
     public Page<UsuarioRequestDTO> listaUsuario(Pageable page, String busca){
@@ -144,11 +162,13 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
         return "desktop";
     }
     @Override
+    @Transactional
     public String adicionarPerfil(long usuarioId, Long perfilId,Boolean ativo) {
             String mensagem = null;
             var usuario =  repository.findById(usuarioId).orElseThrow(
                     ()-> new RuntimeException("Usuario não existe!")
             );
+            var snapshotAnterior = auditoriaChavesService.snapshotUsuarioSistema(usuario);
 
             if(perfilId!=null){
               if (!usuario.getAtivo()){
@@ -167,6 +187,41 @@ public class UsuarioAdpter implements UsuarioGatewayRepository {
 
             }
             repository.save(usuario);
+            var snapshotNovo = auditoriaChavesService.snapshotUsuarioSistema(usuario);
+            if (perfilId != null) {
+                auditoriaChavesService.registrar(
+                        AcaoAuditoriaChaves.EDITAR,
+                        ModuloAuditoriaChaves.USUARIO,
+                        "UsuarioEntity",
+                        usuario.getId(),
+                        "Perfil do usuário %s alterado.".formatted(usuario.getNome()),
+                        (long) usuario.getFilial(),
+                        null,
+                        null,
+                        null,
+                        snapshotAnterior,
+                        snapshotNovo,
+                        null,
+                        null
+                );
+            }
+            if (ativo != null) {
+                auditoriaChavesService.registrar(
+                        ativo ? AcaoAuditoriaChaves.ATIVAR : AcaoAuditoriaChaves.DESATIVAR,
+                        ModuloAuditoriaChaves.USUARIO,
+                        "UsuarioEntity",
+                        usuario.getId(),
+                        ativo ? "Usuário %s ativado.".formatted(usuario.getNome()) : "Usuário %s desativado.".formatted(usuario.getNome()),
+                        (long) usuario.getFilial(),
+                        null,
+                        null,
+                        null,
+                        snapshotAnterior,
+                        snapshotNovo,
+                        null,
+                        null
+                );
+            }
 
       return mensagem != null ? mensagem : "Nenhuma alteração realizada";
     }

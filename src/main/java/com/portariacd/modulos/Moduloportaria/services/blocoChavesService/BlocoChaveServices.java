@@ -4,34 +4,59 @@ import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.Arma
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.BlocoChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.StatusArmario;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.Tipo;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.AcaoAuditoriaChaves;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.ModuloAuditoriaChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.ArmarioDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.ArmarioResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.BlocoChavesDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.BlocoChavesResponseDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.ArmarioRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.BlocoChavesRepository;
+import com.portariacd.modulos.Moduloportaria.services.AuditoriaChavesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class BlocoChaveServices {
+    public static final int LIMITE_MAXIMO_CRIACAO_CHAVES = 2500;
+
     @Autowired
    private ArmarioRepository repository;
     @Autowired
     private BlocoChavesRepository chavesRepository;
+    @Autowired
+    private AuditoriaChavesService auditoriaChavesService;
 
+   @Transactional
    public void criaArmario(ArmarioDTO dto){
     Optional<Armario> response = repository.findByFilial(dto.filial(), Tipo.convertTipo(dto.tipo()));
     if(response.isPresent()){
         throw new RuntimeException("Ja contém armario criado");
     }
-      repository.save(new Armario(dto));
+      Armario armario = repository.save(new Armario(dto));
+      auditoriaChavesService.registrar(
+              AcaoAuditoriaChaves.CRIAR_ARMARIO,
+              ModuloAuditoriaChaves.ARMARIO,
+              "Armario",
+              armario.getId(),
+              "Armário %s criado para filial %d.".formatted(armario.getTipo().name(), armario.getFilial()),
+              armario.getFilial(),
+              null,
+              armario.getId(),
+              null,
+              null,
+              auditoriaChavesService.snapshotArmario(armario),
+              null,
+              null
+      );
    }
 
    public List<ArmarioResponseDTO> listarArmariosComProblema(Integer filial, String tipo) {
@@ -56,6 +81,7 @@ public class BlocoChaveServices {
        return status == StatusArmario.EM_MANUTENCAO || status == StatusArmario.BLOQUEADO;
    }
 
+   @Transactional
    public BlocoChaves alterarStatusBloco(Long armarioId, Long blocoId, Integer numeroChave,
                                          String tipo, String status, String descricaoProblema) {
        var armario = repository.findById(armarioId)
@@ -67,13 +93,41 @@ public class BlocoChaveServices {
                        : chave.getNumero().equals(numeroChave))
                .findFirst()
                .orElseThrow(() -> new RuntimeException("Chave não encontrada no armário"));
+       var snapshotAnterior = auditoriaChavesService.snapshotChave(bloco);
+       var statusAnterior = bloco.getStatus();
+       var ativoAnterior = bloco.isAtivo();
        StatusArmario novoStatus = converterStatus(status);
        bloco.setStatus(novoStatus);
        boolean ativo = novoStatus == StatusArmario.LIVRE || novoStatus == StatusArmario.OCUPADO;
        bloco.setAtivo(ativo);
        bloco.setDisponivel(novoStatus == StatusArmario.LIVRE);
        bloco.setDescricaoProblema(ativo ? null : descricaoProblema);
-       return chavesRepository.save(bloco);
+       var salvo = chavesRepository.save(bloco);
+       AcaoAuditoriaChaves acao = acaoStatus(ativoAnterior, ativo);
+       String descricao = "Status da chave %d do armário %d alterado de %s para %s."
+               .formatted(salvo.getNumero(), armario.getId(), statusAnterior, novoStatus);
+       auditoriaChavesService.registrar(
+               acao,
+               ModuloAuditoriaChaves.CHAVE,
+               "BlocoChaves",
+               salvo.getId(),
+               descricao,
+               armario.getFilial(),
+               blocoId,
+               armario.getId(),
+               salvo.getId(),
+               snapshotAnterior,
+               auditoriaChavesService.snapshotChave(salvo),
+               null,
+               null
+       );
+       return salvo;
+   }
+
+   private AcaoAuditoriaChaves acaoStatus(boolean ativoAnterior, boolean ativoNovo) {
+       if (!ativoAnterior && ativoNovo) return AcaoAuditoriaChaves.ATIVAR;
+       if (ativoAnterior && !ativoNovo) return AcaoAuditoriaChaves.DESATIVAR;
+       return AcaoAuditoriaChaves.ATUALIZAR_STATUS;
    }
 
    private void validarTipo(Armario armario, String tipo) {
@@ -106,11 +160,15 @@ public class BlocoChaveServices {
                 .toList();
     }
     
+    @Transactional
     public List<BlocoChavesResponseDTO> cadastrarChaves(BlocoChavesDTO bloco) {
+       validarQuantidade(bloco.quantidade());
        var armario = repository.findById(bloco.amarioId()).orElseThrow(
                ()-> new RuntimeException("Armarios não encontrado")
        );
         Integer ultimoNumero = chavesRepository.buscarUltimoNumero(bloco.amarioId());
+        int quantidadeAnterior = Math.toIntExact(chavesRepository.countByArmarioId(bloco.amarioId()));
+        var snapshotAnterior = auditoriaChavesService.snapshotArmario(armario);
         List<BlocoChaves> novosBlocos = new ArrayList<>();
         for (var i=1;i<=bloco.quantidade();i++){
             BlocoChaves chave = new BlocoChaves();
@@ -121,18 +179,43 @@ public class BlocoChaveServices {
             chave.setStatus(StatusArmario.LIVRE);
             novosBlocos.add(chave);
         }
-        if(novosBlocos.size() > 1000){
-            throw new RuntimeException("Limiete maximo de armarios 1000");
-        }
-        if(ultimoNumero.longValue()<100) {
-            var salvos = chavesRepository.saveAll(novosBlocos);
-            return salvos.stream()
-                    .map(BlocoChavesResponseDTO::new)
-                    .toList();
-        }
-        throw new RuntimeException("Limiete excedido");
+        var salvos = chavesRepository.saveAll(novosBlocos);
+        int quantidadeFinal = quantidadeAnterior + salvos.size();
+        auditoriaChavesService.registrar(
+                AcaoAuditoriaChaves.ADICIONAR_CHAVES,
+                ModuloAuditoriaChaves.CHAVE,
+                "BlocoChaves",
+                armario.getId(),
+                "Adicionadas %d chaves ao armário %d. Quantidade anterior: %d. Quantidade final: %d."
+                        .formatted(salvos.size(), armario.getId(), quantidadeAnterior, quantidadeFinal),
+                armario.getFilial(),
+                null,
+                armario.getId(),
+                null,
+                snapshotAnterior,
+                Map.of(
+                        "armarioId", armario.getId(),
+                        "filial", armario.getFilial(),
+                        "tipo", armario.getTipo().name(),
+                        "primeiraChave", salvos.isEmpty() ? null : salvos.get(0).getNumero(),
+                        "ultimaChave", salvos.isEmpty() ? null : salvos.get(salvos.size() - 1).getNumero(),
+                        "quantidadeAdicionada", salvos.size(),
+                        "quantidadeFinal", quantidadeFinal
+                ),
+                quantidadeAnterior,
+                quantidadeFinal
+        );
+        return salvos.stream()
+                .map(BlocoChavesResponseDTO::new)
+                .toList();
 
+    }
 
+    private void validarQuantidade(Integer quantidade) {
+       if (quantidade == null || quantidade < 1 || quantidade > LIMITE_MAXIMO_CRIACAO_CHAVES) {
+           throw new RuntimeException("Quantidade de chaves deve estar entre 1 e "
+                   + LIMITE_MAXIMO_CRIACAO_CHAVES);
+       }
     }
     @Cacheable(value = "armarios", key = "#filial + ':' + #tipo")
     public ArmarioResponseDTO unicoArmariodId(Long armarioId, Tipo tipo) {

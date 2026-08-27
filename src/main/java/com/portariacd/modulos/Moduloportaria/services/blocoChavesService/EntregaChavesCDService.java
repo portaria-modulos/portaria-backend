@@ -2,6 +2,8 @@ package com.portariacd.modulos.Moduloportaria.services.blocoChavesService;
 
 import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.*;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.AcaoAuditoriaChaves;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.ModuloAuditoriaChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.armario.ArmarioResponseDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.ChaveDevolucao;
 import com.portariacd.modulos.Moduloportaria.domain.models.dto.blocoChavesDTo.DesvolucaoChaveDto;
@@ -16,11 +18,13 @@ import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPers
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.UsuarioRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.validation.exeption.UsuarioConsumerValidation;
+import com.portariacd.modulos.Moduloportaria.services.AuditoriaChavesService;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.method.DesvolucaoChaveUsuarioDto;
 import com.portariacd.modulos.Moduloportaria.services.blocoChavesService.method.FactureMetodChave;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -49,7 +53,10 @@ public class EntregaChavesCDService {
     private UsuarioRepository usuarioRepository;
     @Autowired
     private EntregaChaveHistoryRepository entregaChaveHistoryRepository;
+    @Autowired
+    private AuditoriaChavesService auditoriaChavesService;
 
+    @Transactional
     public DevolucaoInteface entregaDeChaves(EntregaChavesDTO d){
         var armario = armarioRepository.findById(d.armarioId())
                 .orElseThrow(
@@ -80,9 +87,7 @@ public class EntregaChavesCDService {
         if(Long.parseLong(usuarioConsumer.get().getFilial().toString())!=armario.getFilial()){
             throw new UsuarioConsumerValidation("Colaborador Diferente da filial!",false);
         }
-        var usuarioEntrega =  usuarioRepository.findById(d.usuarioId()).orElseThrow(
-                ()->new UsuarioConsumerValidation("Usuario não encontrado",false)
-        );
+        var responsavel = auditoriaChavesService.responsavelAtual();
         var contemChaves = repository.findEntregaUsuario(usuarioConsumer.get().getMatricula(),armario.getId());
         if(contemChaves.isPresent()){
             System.out.println();
@@ -100,6 +105,7 @@ public class EntregaChavesCDService {
         if (!chave.isDisponivel()) {
             throw new RuntimeException("Chave já está em uso");
         }
+        var snapshotAnterior = auditoriaChavesService.snapshotChave(chave);
         chave.setDisponivel(false);
         chave.setStatus(StatusArmario.OCUPADO);
         chave.setUsuarioOcupacao(usuarioConsumer.get().getNome());
@@ -108,8 +114,8 @@ public class EntregaChavesCDService {
         entrega.setMatriculaColaborador(usuarioConsumer.get().getMatricula());
         entrega.setNomeColaborador(usuarioConsumer.get().getNome());
         entrega.setEmpresaColaborador(usuarioConsumer.get().getEmpresa());
-        entrega.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
-        entrega.setUsuarioIdRetirada(usuarioConsumer.get().getId());
+        entrega.setUsuarioPortariaRetirada(responsavel.nome());
+        entrega.setUsuarioIdRetirada(responsavel.id());
         entrega.setDataHoraRetirada(OffsetDateTime.now());
         entrega.setFilialId(armario.getFilial());
         entrega.setEntregue(false);
@@ -119,15 +125,36 @@ public class EntregaChavesCDService {
         history.setMatriculaColaborador(matircula);
         history.setEmpresa(usuarioConsumer.get().getEmpresa());
         history.setNomeColaborador(usuarioConsumer.get().getNome());
-        history.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
-        history.setUsuarioIdRetirada(usuarioConsumer.get().getId());
+        history.setUsuarioPortariaRetirada(responsavel.nome());
+        history.setUsuarioIdRetirada(responsavel.id());
         history.setDataHoraRetirada(OffsetDateTime.now());
         history.setFilialId(armario.getFilial());
         history.setBlocoChaves(chave.getId());
         history.setStatus(StatusArmario.OCUPADO.name());
-        repository.save(entrega);
-        chavesRepository.save(chave);
+        var entregaSalva = repository.save(entrega);
+        var chaveSalva = chavesRepository.save(chave);
         entregaChaveHistoryRepository.save(history);
+        auditoriaChavesService.registrar(
+                AcaoAuditoriaChaves.ENTREGAR_CHAVE,
+                ModuloAuditoriaChaves.ENTREGA_CHAVE,
+                "EntregaChave",
+                entregaSalva.getId(),
+                "Chave %d do armário %d entregue para %s. Status alterado de %s para %s."
+                        .formatted(chaveSalva.getNumero(), armario.getId(), usuarioConsumer.get().getNome(),
+                                StatusArmario.LIVRE, StatusArmario.OCUPADO),
+                armario.getFilial(),
+                null,
+                armario.getId(),
+                chaveSalva.getId(),
+                snapshotAnterior,
+                Map.of(
+                        "entrega", auditoriaChavesService.snapshotEntrega(entregaSalva),
+                        "chave", auditoriaChavesService.snapshotChave(chaveSalva),
+                        "colaborador", auditoriaChavesService.snapshotUsuarioConsumer(usuarioConsumer.get())
+                ),
+                null,
+                null
+        );
         var s =new  EntregaToken();
         s.setMsg("Entregue com sucesso");
         s.setType("Emtrega");
@@ -194,14 +221,13 @@ public class EntregaChavesCDService {
 //
 //    }
 
+    @Transactional
     public DevolucaoInteface liberacaoDeChaves(DesvolucaoChaveDto item){
         var armario = armarioRepository.findById(item.item().arm())
                 .orElseThrow(
                         ()->new RuntimeException("Armario não encontrado")
                 );
-        var usuarioEntrega =  usuarioRepository.findById(item.usuarioId()).orElseThrow(
-                ()->new UsuarioConsumerValidation("Usuario não encontrado",false)
-        );
+        var responsavel = auditoriaChavesService.responsavelAtual();
 
         var chave = armario.getBlocoChaves().stream()
                 .filter(c -> c.getNumero().equals(item.item().chave()))
@@ -210,25 +236,47 @@ public class EntregaChavesCDService {
         var entregaAtiva = repository.findEntregaAtiva(chave.getId());
 
         if (entregaAtiva.isPresent()) {
+            var snapshotAnterior = auditoriaChavesService.snapshotChave(chave);
+            var entregaAnterior = auditoriaChavesService.snapshotEntrega(entregaAtiva.get());
+            String usuarioOcupacao = chave.getUsuarioOcupacao();
+            Long usuarioOcupacaoId = chave.getUsuarioOcupacaoId();
             chave.setStatus(StatusArmario.LIVRE);
             chave.setDisponivel(true);
             chave.setUsuarioOcupacao(null);
             chave.setUsuarioOcupacaoId(null);
             var history = new EntregaChaveHistory();
-            history.setUsuarioPortariaRetirada(usuarioEntrega.getUsername());
-            history.setUsuarioIdRetirada(chave.getUsuarioOcupacaoId());
+            history.setUsuarioPortariaRetirada(responsavel.nome());
+            history.setUsuarioIdRetirada(usuarioOcupacaoId);
             history.setDataHoraRetirada(OffsetDateTime.now());
             history.setFilialId(armario.getFilial());
             history.setBlocoChaves(chave.getId());
             history.setStatus(StatusArmario.LIVRE.name());
 
             entregaAtiva.get().setDataHoraDevolucao(LocalDateTime.now());
-            entregaAtiva.get().setUsuarioPortariaDevolucao(usuarioEntrega.getNome());
-            entregaAtiva.get().setUsuarioIdDevolucao(usuarioEntrega.getId());
+            entregaAtiva.get().setUsuarioPortariaDevolucao(responsavel.nome());
+            entregaAtiva.get().setUsuarioIdDevolucao(responsavel.id());
             entregaAtiva.get().setEntregue(true);
-            repository.save(entregaAtiva.get());
-            chavesRepository.save(chave);
+            var entregaSalva = repository.save(entregaAtiva.get());
+            var chaveSalva = chavesRepository.save(chave);
             entregaChaveHistoryRepository.save(history);
+            auditoriaChavesService.registrar(
+                    AcaoAuditoriaChaves.DEVOLVER_CHAVE,
+                    ModuloAuditoriaChaves.DEVOLUCAO_CHAVE,
+                    "EntregaChave",
+                    entregaSalva.getId(),
+                    "Chave %d do armário %d devolvida por %s. Status alterado de %s para %s."
+                            .formatted(chaveSalva.getNumero(), armario.getId(), usuarioOcupacao,
+                                    StatusArmario.OCUPADO, StatusArmario.LIVRE),
+                    armario.getFilial(),
+                    null,
+                    armario.getId(),
+                    chaveSalva.getId(),
+                    Map.of("entrega", entregaAnterior, "chave", snapshotAnterior),
+                    Map.of("entrega", auditoriaChavesService.snapshotEntrega(entregaSalva),
+                            "chave", auditoriaChavesService.snapshotChave(chaveSalva)),
+                    null,
+                    null
+            );
             var e = new DevolucaoChaves();
             e.setType("Devolucao");
             e.setMsg("Devolvida com sucesso");

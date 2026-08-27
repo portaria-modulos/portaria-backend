@@ -3,12 +3,15 @@ package com.portariacd.modulos.Moduloportaria.services.blocoChavesService;
 import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.DevolucaoInteface;
 import com.portariacd.modulos.Moduloportaria.controllers.controleChaves.EntregaToken;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.*;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.AcaoAuditoriaChaves;
+import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.auditoria.ModuloAuditoriaChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.FactoryResponseChaves;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.TerceirizadoResponse;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.UsuarioConsumerRequestDTO;
 import com.portariacd.modulos.Moduloportaria.domain.models.controleDeChaves.chaves.UsuarioConsumerUpdateDTO;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.AreaPersisteAmario.UsuarioConsumerRepository;
 import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.FilialRepository;
+import com.portariacd.modulos.Moduloportaria.services.AuditoriaChavesService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -39,6 +42,10 @@ public class UsuarioConsumerService {
     private BiometriaRepository biometriaRepository;
     @Autowired
     private EntregaChaveRepository entregaChaveRepository;
+    @Autowired
+    private AuditoriaChavesService auditoriaChavesService;
+
+    @Transactional
     public Map<String, String> cadastroDeUsuario(FactoryResponseChaves create, MultipartFile file) throws Exception {
         validarFilial(create.getFilial());
         var s = service.extrairEmbeddingFace(file);
@@ -66,7 +73,8 @@ public class UsuarioConsumerService {
                 var usuarioChaves = new UsuarioConsumerChaves(usm);
                 BiometriaFacial biometriaFacial = new BiometriaFacial(usuarioChaves, biometria, OffsetDateTime.now());
                 usuarioChaves.setBiometriaFacial(biometriaFacial);
-                repository.save(usuarioChaves);
+                var salvo = repository.save(usuarioChaves);
+                registrarCriacaoUsuarioConsumer(salvo);
             }
 
             return Map.of("msg","Usuario criado com sucesso");
@@ -89,7 +97,8 @@ public class UsuarioConsumerService {
                 var usuarioChaves = new UsuarioConsumerChaves(terceirizadoResponse);
                 BiometriaFacial biometriaFacial = new BiometriaFacial(usuarioChaves, biometria, OffsetDateTime.now());
                 usuarioChaves.setBiometriaFacial(biometriaFacial);
-                repository.save(usuarioChaves);
+                var salvo = repository.save(usuarioChaves);
+                registrarCriacaoUsuarioConsumer(salvo);
             }
 
             return Map.of("msg","Usuario criado com sucesso");
@@ -110,7 +119,8 @@ public class UsuarioConsumerService {
                 if (!usuario.get().getAtivo()) throw new RuntimeException("Usuario bloqueado");
                 throw new RuntimeException("Colaborador ja cadastrado");
             }
-            repository.save(new UsuarioConsumerChaves(usm));
+            var salvo = repository.save(new UsuarioConsumerChaves(usm));
+            registrarCriacaoUsuarioConsumer(salvo);
             return;
         }
         if (create instanceof TerceirizadoResponse terceirizado) {
@@ -119,7 +129,8 @@ public class UsuarioConsumerService {
                 if (!usuario.get().getAtivo()) throw new RuntimeException("Usuario bloqueado");
                 throw new RuntimeException("Colaborador ja cadastrado");
             }
-            repository.save(new UsuarioConsumerChaves(terceirizado));
+            var salvo = repository.save(new UsuarioConsumerChaves(terceirizado));
+            registrarCriacaoUsuarioConsumer(salvo);
             return;
         }
         throw new IllegalArgumentException("Tipo de usuário inválido");
@@ -140,6 +151,7 @@ public class UsuarioConsumerService {
                                                 MultipartFile file) {
         var usuario = repository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        var snapshotAnterior = auditoriaChavesService.snapshotUsuarioConsumer(usuario);
 
         if (temValor(update.getMatricula())) {
             validarIdentificador(repository.findByMatricula(update.getMatricula()), usuario,
@@ -183,7 +195,22 @@ public class UsuarioConsumerService {
             }
         }
 
-        repository.save(usuario);
+        var salvo = repository.save(usuario);
+        auditoriaChavesService.registrar(
+                AcaoAuditoriaChaves.EDITAR,
+                ModuloAuditoriaChaves.USUARIO,
+                "UsuarioConsumerChaves",
+                salvo.getId(),
+                "Usuário de chaves %s atualizado.".formatted(salvo.getNome()),
+                salvo.getFilial() == null ? null : salvo.getFilial().longValue(),
+                null,
+                null,
+                null,
+                snapshotAnterior,
+                auditoriaChavesService.snapshotUsuarioConsumer(salvo),
+                null,
+                null
+        );
         return Map.of("msg", "Usuário atualizado com sucesso");
     }
 
@@ -214,6 +241,7 @@ public class UsuarioConsumerService {
 
         var usuario = repository.findById(idusuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        var snapshotAnterior = auditoriaChavesService.snapshotUsuarioConsumer(usuario);
 
         var usuarioComChavesAtivoNoUsuario = entregaChaveRepository.entregaChaveUsuarioAtivoFalse(idusuario);
 
@@ -240,6 +268,22 @@ public class UsuarioConsumerService {
             repository.deleteById(idusuario);
             repository.flush();
 
+            auditoriaChavesService.registrar(
+                    AcaoAuditoriaChaves.EXCLUIR,
+                    ModuloAuditoriaChaves.USUARIO,
+                    "UsuarioConsumerChaves",
+                    idusuario,
+                    "Usuário de chaves %s excluído.".formatted(usuario.getNome()),
+                    usuario.getFilial() == null ? null : usuario.getFilial().longValue(),
+                    null,
+                    null,
+                    null,
+                    snapshotAnterior,
+                    null,
+                    null,
+                    null
+            );
+
             var s = new EntregaToken();
             s.setMsg("Usuario deletado");
             s.setType("Entrega");
@@ -257,5 +301,23 @@ public class UsuarioConsumerService {
         """.formatted(valoresChaves);
 
         throw new RuntimeException(mensagem);
+    }
+
+    private void registrarCriacaoUsuarioConsumer(UsuarioConsumerChaves usuario) {
+        auditoriaChavesService.registrar(
+                AcaoAuditoriaChaves.CRIAR,
+                ModuloAuditoriaChaves.USUARIO,
+                "UsuarioConsumerChaves",
+                usuario.getId(),
+                "Usuário de chaves %s criado.".formatted(usuario.getNome()),
+                usuario.getFilial() == null ? null : usuario.getFilial().longValue(),
+                null,
+                null,
+                null,
+                null,
+                auditoriaChavesService.snapshotUsuarioConsumer(usuario),
+                null,
+                null
+        );
     }
 }
