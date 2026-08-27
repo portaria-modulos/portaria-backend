@@ -37,7 +37,7 @@ public class ControlerConsumerUsuario {
     private UsuarioConsumerService service;
     @Autowired
     private UsuarioConsumerImportService importService;
-    @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
+    @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO','GERENCIAR_USUARIOS','CADASTRO_USUARIO')")
     @PostMapping
     public ResponseEntity<Map<String,String>> cadastroUsuario(@RequestPart("res") @Valid String res, @RequestParam(value = "file",required = true)MultipartFile file) throws Exception {
         var conv = converteJson.conversorChaves(res, FactoryResponseChaves.class);
@@ -55,14 +55,14 @@ public class ControlerConsumerUsuario {
         return ResponseEntity.ok(resposta);
     }
 
-    @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
+    @PreAuthorize("@permissaoService.hasPermission(authentication,'GERENCIAR_USUARIOS','CADASTRO_USUARIO')")
     @PostMapping(value = "/importar", consumes = "multipart/form-data")
     public ResponseEntity<ImportacaoUsuarioResponseDTO> importarUsuarios(
             @RequestParam("planilha") MultipartFile planilha) throws Exception {
         return ResponseEntity.ok(importService.importar(planilha));
     }
 
-    @PreAuthorize("@permissaoService.hasPermission(authentication, 'REGISTRO_CRIADO')")
+    @PreAuthorize("@permissaoService.hasPermission(authentication, 'GERENCIAR_USUARIOS','CADASTRO_USUARIO')")
     @PutMapping
     public ResponseEntity<Map<String, String>> atualizaUsuario(
             @RequestParam("usuarioId") Long usuarioId,
@@ -84,7 +84,7 @@ public class ControlerConsumerUsuario {
         UsuarioProjection l = service.extrairEmbedding(file);
         return ResponseEntity.ok(l);
     }
-
+    @PreAuthorize("@permissaoService.hasPermission(authentication,'DELETAR_USUARIO','DELETE_GLOBAL')")
     @DeleteMapping("/delete/user")
     public ResponseEntity<DevolucaoInteface> deleteUsuario(@RequestParam(name = "usuarioId") Long id){
         DevolucaoInteface l = service.deleteUsuario(id);

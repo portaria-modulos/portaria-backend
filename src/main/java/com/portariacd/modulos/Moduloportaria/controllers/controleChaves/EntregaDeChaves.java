@@ -66,7 +66,7 @@ public class EntregaDeChaves {
         var lista = service.ocupadoFilial(filial, arm);
         return ResponseEntity.ok(lista);
     }
-
+    @PreAuthorize("@permissaoService.hasPermission(authentication,'VISUALIZAR_REGISTRO','GERAR_RELATORIO','GERENCIAR_REGISTROS','LISTA_GERAL')")
     @GetMapping("relatorio")
     public ResponseEntity<?> relatorio(
             @RequestParam(required = false) LocalDate dataInicio,
