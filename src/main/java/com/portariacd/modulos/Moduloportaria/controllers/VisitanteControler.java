@@ -47,6 +47,13 @@ public class VisitanteControler {
     public VisitanteDTO buscaVisitante(@RequestParam(name = "visitanteId",required = false) Long visitanteId,@RequestParam(name = "nome",required = false) String nome) {
         return service.buscaVisitante(visitanteId,nome);
     }
+    @GetMapping("/sugestoes")
+    public ResponseEntity<Page<VisitanteFiltroDTO>> sugestoes(
+            @RequestParam(name = "busca", required = false) String busca,
+            @RequestParam(name = "size", defaultValue = "8") int size){
+        var page = org.springframework.data.domain.PageRequest.of(0, Math.min(Math.max(size, 1), 20));
+        return ResponseEntity.ok(service.sugestoesVisitante(page, busca));
+    }
     @GetMapping("/filtro")
     public ResponseEntity<Page<VisitanteFiltroDTO>> FiltroFisitanteLista(Pageable page){
         var lista = service.listaVisitanteFiltro(page);

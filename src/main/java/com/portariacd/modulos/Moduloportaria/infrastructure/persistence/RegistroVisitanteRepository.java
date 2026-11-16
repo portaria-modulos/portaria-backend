@@ -5,6 +5,7 @@ import com.portariacd.modulos.Moduloportaria.infrastructure.persistence.registro
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +19,14 @@ import java.util.Optional;
 public interface RegistroVisitanteRepository extends JpaRepository<RegistroVisitantePortariaEntity,Long>,
         JpaSpecificationExecutor<RegistroVisitantePortariaEntity>
 {
+
+    /**
+     * Listagem com filtros (Specification): traz visitante, recorrencia, criador, entrada e saida
+     * na MESMA consulta (JOIN), evitando uma consulta extra por linha (problema N+1).
+     */
+    @Override
+    @EntityGraph(attributePaths = {"visitante", "visitante.recorrencia", "criador", "entradaVisitante", "saidaVisitante"})
+    Page<RegistroVisitantePortariaEntity> findAll(org.springframework.data.jpa.domain.Specification<RegistroVisitantePortariaEntity> spec, Pageable pageable);
 
     @Query("SELECT p FROM  RegistroVisitantePortariaEntity p WHERE p.filialSolicitado=:filial ORDER BY p.dataCriacao DESC")
     Page<RegistroVisitantePortariaEntity> findAllByFilial(@Param("filial") Integer filial, Pageable pageable);

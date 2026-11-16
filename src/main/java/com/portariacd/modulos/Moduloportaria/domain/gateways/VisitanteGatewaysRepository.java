@@ -11,4 +11,5 @@ public interface VisitanteGatewaysRepository {
     String deleteRegistro(Long visitanteid, Long usuarioId, StatusTypeDeleteVisitante T);
     VisitanteDTO buscaVisitante(Long visitanteId,String nome);
     Page<VisitanteFiltroDTO> listaVisitanteFiltro(Pageable page);
+    Page<VisitanteFiltroDTO> sugestoesVisitante(Pageable page, String termo);
 }

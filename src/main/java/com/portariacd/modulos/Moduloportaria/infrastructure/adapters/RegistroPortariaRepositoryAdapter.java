@@ -343,7 +343,7 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<RequestPortariaDTO> FindAllPortarias(Pageable pageable,
                                                      Integer filial,
                                                      String busca,

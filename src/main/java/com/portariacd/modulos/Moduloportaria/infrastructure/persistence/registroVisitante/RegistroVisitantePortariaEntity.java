@@ -11,7 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 @Entity
-@Table(name = "registro_portaria")
+@Table(name = "registro_portaria", indexes = {
+        @Index(name = "idx_registro_filial_status", columnList = "filialSolicitado,status"),
+        @Index(name = "idx_registro_data_criacao", columnList = "dataCriacao"),
+        @Index(name = "idx_registro_protocolo", columnList = "protocolo")
+})
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegistroVisitantePortariaEntity {

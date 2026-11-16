@@ -24,6 +24,9 @@ public class VisitanteService  {
     public VisitanteDTO buscaVisitante(Long visitanteId,String nome) {
         return repository.buscaVisitante(visitanteId,nome);
     }
+    public Page<VisitanteFiltroDTO> sugestoesVisitante(Pageable page, String termo) {
+        return repository.sugestoesVisitante(page, termo);
+    }
     public Page<VisitanteFiltroDTO> listaVisitanteFiltro(Pageable page) {
         return repository.listaVisitanteFiltro(page);
     }

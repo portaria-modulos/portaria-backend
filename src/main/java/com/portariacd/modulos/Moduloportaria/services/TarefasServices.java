@@ -12,12 +12,33 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class TarefasServices {
+   private static final Logger log = LoggerFactory.getLogger(TarefasServices.class);
    private final RegistroVisitanteRepository repository;
     TarefasServices(RegistroVisitanteRepository repository){
         this.repository = repository;
+    }
+
+    /**
+     * Roda todos os dias às 00:01 (logo depois da tarefa das 00:00 que fecha os registros automaticamente)
+     * e apaga todos os registros com status FECHADO_AUTOMATICO, liberando o usuário para criar novos.
+     * Entrada e saída são removidas em cascata; o cadastro do visitante e o histórico são preservados.
+     */
+    @Transactional
+    @Scheduled(cron = "0 1 0 * * *", zone = "America/Sao_Paulo")
+    public void deletarRegistrosFechadosAutomaticos() {
+        var registros = repository.findAllByStatus(StatusPortaria.FECHADO_AUTOMATICO);
+        if (registros.isEmpty()) {
+            log.info("[Tarefa 00:01] Nenhum registro FECHADO_AUTOMATICO para deletar.");
+            return;
+        }
+        int total = registros.size();
+        repository.deleteAll(registros);
+        log.info("[Tarefa 00:01] {} registro(s) FECHADO_AUTOMATICO deletado(s).", total);
     }
 
     @Transactional

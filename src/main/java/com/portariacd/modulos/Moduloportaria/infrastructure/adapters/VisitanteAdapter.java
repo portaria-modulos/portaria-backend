@@ -59,6 +59,14 @@ public class VisitanteAdapter implements VisitanteGatewaysRepository {
         return repository.findAll(spec, page).map(VisitanteDTO::new);
     }
     @Override
+    public Page<VisitanteFiltroDTO> sugestoesVisitante(Pageable page, String termo) {
+        if (termo == null || termo.trim().length() < 2) {
+            return repository.findAllByAtivoTrue(page).map(VisitanteFiltroDTO::new);
+        }
+        String t = termo.trim();
+        return repository.buscarSugestoes(page, t, t.replaceAll("\\D", "")).map(VisitanteFiltroDTO::new);
+    }
+    @Override
     public Page<VisitanteFiltroDTO> listaVisitanteFiltro(Pageable page) {
         return repository.findAllByAtivoTrue(page).map(VisitanteFiltroDTO::new);
     }
@@ -153,6 +161,11 @@ public class VisitanteAdapter implements VisitanteGatewaysRepository {
     }
     @Override
     public VisitanteDTO buscaVisitante(Long visitanteId,String nome){
+        if (visitanteId == null && nome != null && !nome.isBlank()) {
+            String t = nome.trim();
+            var achados = repository.buscarExato(t, t.replaceAll("[\\s-]", ""), t.replaceAll("\\D", ""));
+            return achados.isEmpty() ? null : new VisitanteDTO(achados.get(0));
+        }
         Optional<VisitanteEntity>  visitanteOpt = repository.findFirstByIdOrNomeCompletoIgnoreCase(visitanteId,nome);
         VisitanteEntity visitante = visitanteOpt.orElse(null);
         if (visitante != null) {

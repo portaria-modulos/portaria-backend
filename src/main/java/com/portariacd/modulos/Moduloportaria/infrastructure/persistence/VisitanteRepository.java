@@ -38,4 +38,23 @@ public interface VisitanteRepository extends JpaRepository<VisitanteEntity,Long>
     VisitanteEntity findByIdByNome(Long visitanteId, String nome);
 
     Optional<VisitanteEntity> findFirstByIdOrNomeCompletoIgnoreCase(Long visitanteId, String nome);
+
+    /** Busca parcial (nome, placa ou telefone) apenas de visitantes ativos, para sugestoes. */
+    @Query("""
+            select p from VisitanteEntity p where p.ativo = true and (
+            LOWER(p.nomeCompleto) LIKE LOWER(CONCAT('%', :termo, '%'))
+            OR LOWER(p.placaCarro) LIKE LOWER(CONCAT('%', :termo, '%'))
+            OR (:digitos <> '' AND REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(p.numeroTelefone,'(',''),')',''),'-',''),' ',''),'+','') LIKE CONCAT('%', :digitos, '%'))
+            ) order by p.nomeCompleto
+            """)
+    Page<VisitanteEntity> buscarSugestoes(Pageable page, @Param("termo") String termo, @Param("digitos") String digitos);
+
+    /** Busca exata por nome, placa ou telefone (comparacao sem mascara). */
+    @Query("""
+            select p from VisitanteEntity p where
+            LOWER(p.nomeCompleto) = LOWER(:termo)
+            OR LOWER(REPLACE(REPLACE(p.placaCarro,'-',''),' ','')) = LOWER(:placa)
+            OR (:digitos <> '' AND REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(p.numeroTelefone,'(',''),')',''),'-',''),' ',''),'+','') = :digitos)
+            """)
+    java.util.List<VisitanteEntity> buscarExato(@Param("termo") String termo, @Param("placa") String placa, @Param("digitos") String digitos);
 }
