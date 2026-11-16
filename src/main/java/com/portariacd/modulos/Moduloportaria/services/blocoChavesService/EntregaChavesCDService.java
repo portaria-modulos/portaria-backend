@@ -58,14 +58,9 @@ public class EntregaChavesCDService {
 
     @Transactional
     public DevolucaoInteface entregaDeChaves(EntregaChavesDTO d){
-        var armario = armarioRepository.findById(d.armarioId())
-                .orElseThrow(
-                        ()->new RuntimeException("Armario não encontrado")
-                );
-        var chave = armario.getBlocoChaves().stream()
-                .filter(c -> c.getNumero().equals(d.numeroDaChave()))
-                .findFirst()
+        var chave = chavesRepository.findByArmarioIdAndNumeroForUpdate(d.armarioId(), d.numeroDaChave())
                 .orElseThrow(() -> new RuntimeException("Chave não encontrada"));
+        var armario = chave.getArmario();
         if (!chave.isAtivo() || statusImpedeEntrega(chave.getStatus())) {
             throw new RuntimeException("Não é possível entregar a chave: bloco está "
                     + (chave.isAtivo() ? chave.getStatus().name() : "INATIVO"));
@@ -223,16 +218,10 @@ public class EntregaChavesCDService {
 
     @Transactional
     public DevolucaoInteface liberacaoDeChaves(DesvolucaoChaveDto item){
-        var armario = armarioRepository.findById(item.item().arm())
-                .orElseThrow(
-                        ()->new RuntimeException("Armario não encontrado")
-                );
-        var responsavel = auditoriaChavesService.responsavelAtual();
-
-        var chave = armario.getBlocoChaves().stream()
-                .filter(c -> c.getNumero().equals(item.item().chave()))
-                .findFirst()
+        var chave = chavesRepository.findByArmarioIdAndNumeroForUpdate(item.item().arm(), item.item().chave())
                 .orElseThrow(() -> new RuntimeException("Chave não encontrada"));
+        var armario = chave.getArmario();
+        var responsavel = auditoriaChavesService.responsavelAtual();
         var entregaAtiva = repository.findEntregaAtiva(chave.getId());
 
         if (entregaAtiva.isPresent()) {
