@@ -97,11 +97,25 @@ public class RegistroPortariaRepositoryAdapter implements RegistroPortariaGatewa
     }
     @Transactional
     public String registroPortariaTeste(RegistroPortariaRequestDTO request, MultipartFile file){
-         visitante.findByOneByNumeroTelefone(request.getNumeroTelefone()).ifPresent(
-                v->{
-                    throw new RuntimeException("Existe um visitante com esse Numero Informado");
-                }
-        );
+        // normaliza: nome e placa sempre em maiusculo, sem espacos extras
+        request.setNomeCompleto(request.getNomeCompleto().trim().replaceAll("\\s+", " ").toUpperCase());
+        request.setPlacaVeiculo(request.getPlacaVeiculo().trim().replaceAll("[\\s-]", "").toUpperCase());
+        String digitosTelefone = request.getNumeroTelefone() == null ? "" : request.getNumeroTelefone().replaceAll("\\D", "");
+        // valida duplicidade de visitante por telefone, placa e nome (sem diferenciar maiuscula/minuscula)
+        var existentes = visitante.buscarExato(request.getNomeCompleto(), request.getPlacaVeiculo(), digitosTelefone);
+        for (var e : existentes) {
+            if (!digitosTelefone.isEmpty() && e.getNumeroTelefone() != null
+                    && e.getNumeroTelefone().replaceAll("\\D", "").equals(digitosTelefone)) {
+                throw new RuntimeException("Existe um visitante com esse Numero Informado");
+            }
+            if (e.getPlacaCarro() != null
+                    && e.getPlacaCarro().replaceAll("[\\s-]", "").equalsIgnoreCase(request.getPlacaVeiculo())) {
+                throw new RuntimeException("Existe um visitante cadastrado com essa Placa informada");
+            }
+            if (e.getNomeCompleto() != null && e.getNomeCompleto().trim().equalsIgnoreCase(request.getNomeCompleto())) {
+                throw new RuntimeException("Existe um visitante cadastrado com esse Nome informado");
+            }
+        }
         var rec = recorrenciaRepository.findByNome(request.getTipoAcesso().toUpperCase())
                 .orElseThrow(() -> new RuntimeException("Recorrência não encontrada: " + request.getTipoAcesso()));
         String nameImagem = ValidaNomeImagem.criarDiretorio(file,"avatar",endpointUrl);;
